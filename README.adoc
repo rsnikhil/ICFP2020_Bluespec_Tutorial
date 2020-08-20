@@ -92,23 +92,12 @@ controlling a pipelined memory-to-memory array-sorting accelerator
 (all the materials for this are open-source).
 
 For background preparation we only assume you know Haskell, and
-perhaps nothing about hardware design.  If you wish to follow along on
-your laptop, please pre-install the following tools:
+perhaps nothing about hardware design.
 
-- The `bsc` compiler from:  https://github.com/B-Lang-org/bsc[].
+If you wish to follow along on your laptop, please pre-install a few
+tools described above in <<SoftwareInstallation>>
 
-- The open-source Verilog simulator `verilator` from
-    https://www.veripool.org[] or (less preferable) the open-source
-    Verilog simulator `IVerilog`, available standardly in common
-    package installers)
-
-- The open-source waveform viewer `gtkwave` (available standardly in
-    common package installers)
-
-Before, and at, the tutorial, we will publicize a web site with all
-the tutorial-specific materials (if you want a link a little earlier,
-kindly contact the instructor by email).  All the materials are free
-and open-source.
+All the tools and tutorial materials are free and open-source.
 
 At the end of the tutorial, we hope you will:
 
