@@ -1,0 +1,125 @@
+= Designing Hardware Systems and Accelerators with Open-Source BH (Bluespec Haskell)
+Rishiyur S. Nikhil, Bluespec, Inc. (c) 2020
+:revnumber: v0.8
+:revdate: 2020-08-20
+:revremark: Pre-publicity
+:sectnums:
+:toc:
+:toclevels: 3
+:toc-title: Contents
+:description: Bluespec Tutorial
+:keywords: Bluespec, BH, BSV, Bluespec Classic, HLHDL, High-Level Hardware Design
+
+This is the public GitHub site for a tutorial on hardware design using
+open-source Bluespec tools, presented at ICFP 2020 (25th ACM SIGPLAN
+International Conference on Functional Programming) on August 23, 2020
+(the whole conference is "`virtual`", i.e., online only).
+
+// ================================================================
+'''
+== Software Installation 
+
+Before the tutorial, please install the following open-source tools
+(each tool's web page has its own installation instructions):
+
+* The `bsc` compiler from:  https://github.com/B-Lang-org/bsc[].
+    ** You will need to install Haskell in order to build `bsc`
+
+* The open-source Verilog simulator `IVerilog`.
+   ** For _much_ faster Verilog simulation, you can install the
+      open-source `verilator` from https://www.veripool.org[].
+
+* The open-source waveform viewer `gtkwave`.
+
+* For the final example in the tutorial, we're going to attach an
+  accelerator to a small RISC-V-based computer system, for which you can git-clone
+  https://github.com/bluespec/Flute[]
+
+Re. Verilog simulator and `gtkwave`, you can get by without them,
+since `bsc` compiles its own standalone simulator "`Bluesim`", and
+viewing waveforms is just one way to observe/debug designs.  However,
+we recommend these to begin getting familiar with the hardware-design
+ecosystem which is very Verilog/SystemVerilog-centric (both tools
+install trivially).  These two are available standardly in common
+package installers, such as:
+
+----
+$ sudo apt-get install iverilog
+$ sudo apt-get install gtkwave
+----
+
+All the tutorial tools and code are developed and tested on Ubuntu
+18.04.5 LTS, but it is likely also to work on Debian Linux and MacOS.
+
+// ================================================================
+== Tutorial materials
+
+The tutorial materials will appear in this repository shortly before
+the tutorial itself: August 23, 2020, 14:00h EDT (New York time).  You
+should be able to `git pull` it at that time.
+
+// ================================================================
+== Other useful links
+
+* The ICFP 2020 conference web page is
+  https://icfp20.sigplan.org[], including registration
+  information.
+    
+** The conference's tutorials page is
+    https://icfp20.sigplan.org/track/icfp-2020-tutorials#event-overview[]
+
+// ================================================================
+== ABSTRACT
+
+Have you ever considered designing and implementing a piece of digital
+hardware, such as an accelerator on an attached FPGA for a complex
+computation (Machine Learning, Computer Vision, ...), or just for fun,
+but were afraid that hardware design was too far from your wheelhouse?
+
+In this tutorial we hope to leverage your knowledge of Haskell to
+demystify this, using a lecture + demonstration format which you can
+follow along on your laptop during the tutorial.  We will use Bluespec
+BH, which is a high-level hardware design language using Haskell
+syntax and types.  BH and its sibling BSV are mature,
+industrial-strength hardware design languages, with over 20 years of
+development; they have been used to design complex components in
+commercial shipping chips.  The `bsc` tool for compiling BH and BSV to
+Verilog was open-sourced in January 2020.
+
+We will start with a simple "`Hello World!`" example, but rapidly climb
+through the gears to end with a complete, Linux-capable RISC-V CPU
+controlling a pipelined memory-to-memory array-sorting accelerator
+(all the materials for this are open-source).
+
+For background preparation we only assume you know Haskell, and
+perhaps nothing about hardware design.  If you wish to follow along on
+your laptop, please pre-install the following tools:
+
+- The `bsc` compiler from:  https://github.com/B-Lang-org/bsc[].
+
+- The open-source Verilog simulator `verilator` from
+    https://www.veripool.org[] or (less preferable) the open-source
+    Verilog simulator `IVerilog`, available standardly in common
+    package installers)
+
+- The open-source waveform viewer `gtkwave` (available standardly in
+    common package installers)
+
+Before, and at, the tutorial, we will publicize a web site with all
+the tutorial-specific materials (if you want a link a little earlier,
+kindly contact the instructor by email).  All the materials are free
+and open-source.
+
+At the end of the tutorial, we hope you will:
+
+- understand how a Haskell-based language (Haskell syntax, Haskell
+    types) can be used to describe complex hardware system STRUCTURES,
+    and how `Guarded Atomic Actions` (rewrite rules) can be used to
+    describe complex hardware system BEHAVIOR in a composable way (and
+    also enabling formal verification).
+
+- feel "`I can do this!`", i.e., that you can read and modify the
+    open-source designs shown in the tutorial, or even create your own
+    hardware designs.
+
+// ================================================================
