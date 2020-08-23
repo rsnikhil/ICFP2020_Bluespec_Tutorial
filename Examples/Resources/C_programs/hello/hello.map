@@ -1,0 +1,836 @@
+Archive member included to satisfy reference by file (symbol)
+
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-errno.o)
+                              ./lib/syscalls.o (__errno)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-exit.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/crt0.o (exit)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-impure.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-exit.o) (_global_impure_ptr)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-init.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/crt0.o (__libc_init_array)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memset.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/crt0.o (memset)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-puts.o)
+                              /tmp/ccWQSj54.o (puts)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-strlen.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-puts.o) (strlen)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__call_atexit.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-exit.o) (__call_exitprocs)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-findfp.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-puts.o) (__sinit)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fini.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__call_atexit.o) (__libc_fini_array)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-puts.o) (__sfvwrite_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fwalk.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-findfp.o) (_fwalk)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mallocr.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-findfp.o) (_malloc_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memchr.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o) (memchr)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memcpy.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o) (memcpy)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memmove-stub.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o) (memmove)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mlock.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mallocr.o) (__malloc_lock)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reallocr.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o) (_realloc_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-sbrkr.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mallocr.o) (_sbrk_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-stdio.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-findfp.o) (__sread)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-writer.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-stdio.o) (_write_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-wsetup.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o) (__swsetup_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-atexit.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__call_atexit.o) (atexit)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-closer.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-stdio.o) (_close_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fclose.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-findfp.o) (_fclose_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fflush.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fclose.o) (__sflush_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-freer.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o) (_free_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-lseekr.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-stdio.o) (_lseek_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-makebuf.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-wsetup.o) (__smakebuf_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-readr.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-stdio.o) (_read_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reent.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-sbrkr.o) (errno)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__atexit.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-atexit.o) (__register_exitproc)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fstatr.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-makebuf.o) (_fstat_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-isattyr.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-makebuf.o) (_isatty_r)
+/home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libnosys.a(_exit.o)
+                              /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-exit.o) (_exit)
+
+Allocating common symbols
+Common symbol       size              file
+
+errno               0x4               /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reent.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD ./lib/syscalls.o
+LOAD ./lib/riscv_counters.o
+LOAD ./lib/ns16550.o
+Address of section .text-segment set to 0x80000000
+LOAD /tmp/ccWQSj54.o
+LOAD /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libm.a
+LOAD /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/libgcc.a
+LOAD /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libnosys.a
+LOAD /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/libgcc.a
+START GROUP
+LOAD /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/libgcc.a
+LOAD /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a
+LOAD /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libnosys.a
+END GROUP
+LOAD /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtend.o
+LOAD ./lib/startup.o
+                [!provide]                        PROVIDE (__executable_start = SEGMENT_START ("text-segment", 0x10000))
+                0x0000000080000078                . = (SEGMENT_START ("text-segment", 0x10000) + SIZEOF_HEADERS)
+
+.interp
+ *(.interp)
+
+.note.gnu.build-id
+ *(.note.gnu.build-id)
+
+.hash
+ *(.hash)
+
+.gnu.hash
+ *(.gnu.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rela.dyn       0x0000000080000078        0x0
+ *(.rela.init)
+ *(.rela.text .rela.text.* .rela.gnu.linkonce.t.*)
+ .rela.text     0x0000000080000078        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/crt0.o
+ .rela.text.startup
+                0x0000000080000078        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/crt0.o
+ *(.rela.fini)
+ *(.rela.rodata .rela.rodata.* .rela.gnu.linkonce.r.*)
+ *(.rela.data .rela.data.* .rela.gnu.linkonce.d.*)
+ *(.rela.tdata .rela.tdata.* .rela.gnu.linkonce.td.*)
+ *(.rela.tbss .rela.tbss.* .rela.gnu.linkonce.tb.*)
+ *(.rela.ctors)
+ *(.rela.dtors)
+ *(.rela.got)
+ *(.rela.sdata .rela.sdata.* .rela.gnu.linkonce.s.*)
+ *(.rela.sbss .rela.sbss.* .rela.gnu.linkonce.sb.*)
+ *(.rela.sdata2 .rela.sdata2.* .rela.gnu.linkonce.s2.*)
+ *(.rela.sbss2 .rela.sbss2.* .rela.gnu.linkonce.sb2.*)
+ *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*)
+                [!provide]                        PROVIDE (__rela_iplt_start = .)
+ *(.rela.iplt)
+                [!provide]                        PROVIDE (__rela_iplt_end = .)
+
+.rela.plt
+ *(.rela.plt)
+
+.init
+ *(SORT_NONE(.init))
+
+.plt
+ *(.plt)
+
+.iplt
+ *(.iplt)
+
+.text           0x0000000080000078     0x2a6c
+ *(.text.unlikely .text.*_unlikely .text.unlikely.*)
+ *(.text.exit .text.exit.*)
+ *(.text.startup .text.startup.*)
+ .text.startup  0x0000000080000078       0x14 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__call_atexit.o)
+ *(.text.hot .text.hot.*)
+ *(SORT_BY_NAME(.text.sorted.*))
+ *(.text .stub .text.* .gnu.linkonce.t.*)
+ .text          0x000000008000008c       0x44 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/crt0.o
+                0x000000008000008c                _start
+ .text          0x00000000800000d0       0x58 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtbegin.o
+ .text          0x0000000080000128      0x4ac ./lib/syscalls.o
+                0x0000000080000128                read
+                0x00000000800001d0                write
+                0x0000000080000254                gettimeofday
+                0x00000000800002c4                sleep
+                0x0000000080000338                _sbrk
+                0x0000000080000378                _write
+                0x00000000800003fc                _close
+                0x000000008000043c                _lseek
+                0x000000008000048c                _read
+                0x00000000800004dc                _fstat
+                0x0000000080000520                _isatty
+                0x0000000080000560                _kill
+                0x00000000800005ac                _getpid
+ .text          0x00000000800005d4       0x78 ./lib/riscv_counters.o
+                0x00000000800005d4                read_cycle
+                0x00000000800005fc                read_time
+                0x0000000080000624                read_instret
+ .text          0x000000008000064c      0x218 ./lib/ns16550.o
+                0x0000000080000728                ns16550_rxready
+                0x000000008000076c                ns16550_rxchar
+                0x00000000800007c0                ns16550_txchar
+                0x0000000080000820                ns16550_flush
+ .text          0x0000000080000864       0x4c /tmp/ccWQSj54.o
+                0x0000000080000864                main
+ .text          0x00000000800008b0        0x6 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-errno.o)
+                0x00000000800008b0                __errno
+ .text          0x00000000800008b6       0x1e /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-exit.o)
+                0x00000000800008b6                exit
+ .text          0x00000000800008d4        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-impure.o)
+ .text          0x00000000800008d4       0x6a /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-init.o)
+                0x00000000800008d4                __libc_init_array
+ .text          0x000000008000093e       0xaa /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memset.o)
+                0x000000008000093e                memset
+ .text          0x00000000800009e8       0x88 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-puts.o)
+                0x00000000800009e8                _puts_r
+                0x0000000080000a68                puts
+ .text          0x0000000080000a70       0x94 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-strlen.o)
+                0x0000000080000a70                strlen
+ .text          0x0000000080000b04       0xc2 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__call_atexit.o)
+                0x0000000080000b04                __call_exitprocs
+ .text          0x0000000080000bc6      0x270 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-findfp.o)
+                0x0000000080000bca                _cleanup_r
+                0x0000000080000d00                __sfmoreglue
+                0x0000000080000d48                __sfp
+                0x0000000080000dfc                _cleanup
+                0x0000000080000e0a                __sinit
+                0x0000000080000e12                __sfp_lock_acquire
+                0x0000000080000e14                __sfp_lock_release
+                0x0000000080000e16                __sinit_lock_acquire
+                0x0000000080000e18                __sinit_lock_release
+                0x0000000080000e1a                __fp_lock_all
+                0x0000000080000e28                __fp_unlock_all
+ .text          0x0000000080000e36       0x38 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fini.o)
+                0x0000000080000e36                __libc_fini_array
+ .text          0x0000000080000e6e      0x32a /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o)
+                0x0000000080000e6e                __sfvwrite_r
+ .text          0x0000000080001198      0x10c /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fwalk.o)
+                0x0000000080001198                _fwalk
+                0x000000008000121a                _fwalk_reent
+ .text          0x00000000800012a4      0x62e /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mallocr.o)
+                0x00000000800012a4                _malloc_r
+ .text          0x00000000800018d2       0x9e /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memchr.o)
+                0x00000000800018d2                memchr
+ .text          0x0000000080001970       0xde /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memcpy.o)
+                0x0000000080001970                memcpy
+ .text          0x0000000080001a4e       0xd6 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memmove-stub.o)
+                0x0000000080001a4e                memmove
+ .text          0x0000000080001b24        0x4 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mlock.o)
+                0x0000000080001b24                __malloc_lock
+                0x0000000080001b26                __malloc_unlock
+ .text          0x0000000080001b28      0x40e /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reallocr.o)
+                0x0000000080001b28                _realloc_r
+ .text          0x0000000080001f36       0x38 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-sbrkr.o)
+                0x0000000080001f36                _sbrk_r
+ .text          0x0000000080001f6e       0xd6 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-stdio.o)
+                0x0000000080001f6e                __sread
+                0x0000000080001fa6                __seofread
+                0x0000000080001faa                __swrite
+                0x0000000080001ffc                __sseek
+                0x000000008000203e                __sclose
+ .text          0x0000000080002044       0x3e /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-writer.o)
+                0x0000000080002044                _write_r
+ .text          0x0000000080002082       0xee /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-wsetup.o)
+                0x0000000080002082                __swsetup_r
+ .text          0x0000000080002170        0xc /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-atexit.o)
+                0x0000000080002170                atexit
+ .text          0x000000008000217c       0x38 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-closer.o)
+                0x000000008000217c                _close_r
+ .text          0x00000000800021b4       0xb6 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fclose.o)
+                0x00000000800021b4                _fclose_r
+                0x0000000080002262                fclose
+ .text          0x000000008000226a      0x1ea /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fflush.o)
+                0x000000008000226a                __sflush_r
+                0x0000000080002404                _fflush_r
+                0x000000008000243a                fflush
+ .text          0x0000000080002454      0x326 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-freer.o)
+                0x0000000080002454                _malloc_trim_r
+                0x000000008000252a                _free_r
+ .text          0x000000008000277a       0x3e /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-lseekr.o)
+                0x000000008000277a                _lseek_r
+ .text          0x00000000800027b8      0x13e /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-makebuf.o)
+                0x00000000800027b8                __swhatbuf_r
+                0x000000008000283a                __smakebuf_r
+ .text          0x00000000800028f6       0x3e /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-readr.o)
+                0x00000000800028f6                _read_r
+ .text          0x0000000080002934       0xc4 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reent.o)
+                0x0000000080002934                cleanup_glue
+                0x0000000080002956                _reclaim_reent
+ .text          0x00000000800029f8       0x76 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__atexit.o)
+                0x00000000800029f8                __register_exitproc
+ .text          0x0000000080002a6e       0x3c /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fstatr.o)
+                0x0000000080002a6e                _fstat_r
+ .text          0x0000000080002aaa       0x38 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-isattyr.o)
+                0x0000000080002aaa                _isatty_r
+ .text          0x0000000080002ae2        0x2 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libnosys.a(_exit.o)
+                0x0000000080002ae2                _exit
+ .text          0x0000000080002ae4        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtend.o
+ *(.gnu.warning)
+
+.fini
+ *(SORT_NONE(.fini))
+                [!provide]                        PROVIDE (__etext = .)
+                [!provide]                        PROVIDE (_etext = .)
+                [!provide]                        PROVIDE (etext = .)
+
+.rodata         0x0000000080002ae8       0x12
+ *(.rodata .rodata.* .gnu.linkonce.r.*)
+ .rodata        0x0000000080002ae8        0xd /tmp/ccWQSj54.o
+ *fill*         0x0000000080002af5        0x3 
+ .rodata.str1.8
+                0x0000000080002af8        0x2 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-puts.o)
+
+.rodata1
+ *(.rodata1)
+
+.sdata2
+ *(.sdata2 .sdata2.* .gnu.linkonce.s2.*)
+
+.sbss2
+ *(.sbss2 .sbss2.* .gnu.linkonce.sb2.*)
+
+.eh_frame_hdr
+ *(.eh_frame_hdr)
+ *(.eh_frame_entry .eh_frame_entry.*)
+
+.eh_frame
+ *(.eh_frame)
+ *(.eh_frame.*)
+
+.gcc_except_table
+ *(.gcc_except_table .gcc_except_table.*)
+
+.gnu_extab
+ *(.gnu_extab*)
+
+.exception_ranges
+ *(.exception_ranges*)
+                0x0000000080003afa                . = DATA_SEGMENT_ALIGN (CONSTANT (MAXPAGESIZE), CONSTANT (COMMONPAGESIZE))
+
+.eh_frame       0x0000000080003afc        0x4
+ *(.eh_frame)
+ .eh_frame      0x0000000080003afc        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtbegin.o
+ .eh_frame      0x0000000080003afc        0x4 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtend.o
+ *(.eh_frame.*)
+
+.gnu_extab
+ *(.gnu_extab)
+
+.gcc_except_table
+ *(.gcc_except_table .gcc_except_table.*)
+
+.exception_ranges
+ *(.exception_ranges*)
+
+.tdata          0x0000000080003b00        0x0
+                [!provide]                        PROVIDE (__tdata_start = .)
+ *(.tdata .tdata.* .gnu.linkonce.td.*)
+
+.tbss
+ *(.tbss .tbss.* .gnu.linkonce.tb.*)
+ *(.tcommon)
+
+.preinit_array  0x0000000080003b00        0x0
+                0x0000000080003b00                PROVIDE (__preinit_array_start = .)
+ *(.preinit_array)
+                0x0000000080003b00                PROVIDE (__preinit_array_end = .)
+
+.init_array     0x0000000080003b00       0x18
+                0x0000000080003b00                PROVIDE (__init_array_start = .)
+ *(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*))
+ .init_array.00000
+                0x0000000080003b00        0x8 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__call_atexit.o)
+ *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
+ .init_array    0x0000000080003b08        0x8 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtbegin.o
+ .init_array    0x0000000080003b10        0x8 ./lib/ns16550.o
+                0x0000000080003b18                PROVIDE (__init_array_end = .)
+
+.fini_array     0x0000000080003b18        0x8
+                0x0000000080003b18                PROVIDE (__fini_array_start = .)
+ *(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*))
+ *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
+ .fini_array    0x0000000080003b18        0x8 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtbegin.o
+                0x0000000080003b20                PROVIDE (__fini_array_end = .)
+
+.ctors
+ *crtbegin.o(.ctors)
+ *crtbegin?.o(.ctors)
+ *(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
+ *(SORT_BY_NAME(.ctors.*))
+ *(.ctors)
+
+.dtors
+ *crtbegin.o(.dtors)
+ *crtbegin?.o(.dtors)
+ *(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
+ *(SORT_BY_NAME(.dtors.*))
+ *(.dtors)
+
+.jcr
+ *(.jcr)
+
+.data.rel.ro
+ *(.data.rel.ro.local* .gnu.linkonce.d.rel.ro.local.*)
+ *(.data.rel.ro .data.rel.ro.* .gnu.linkonce.d.rel.ro.*)
+
+.dynamic
+ *(.dynamic)
+                0x0000000080003b20                . = DATA_SEGMENT_RELRO_END (., 0x0)
+
+.data           0x0000000080003b20      0xf58
+                0x0000000080003b20                __DATA_BEGIN__ = .
+ *(.data .data.* .gnu.linkonce.d.*)
+ .data          0x0000000080003b20        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/crt0.o
+ .data          0x0000000080003b20        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtbegin.o
+ .data          0x0000000080003b20        0x0 ./lib/startup.o
+ .data          0x0000000080003b20        0x0 ./lib/syscalls.o
+ .data          0x0000000080003b20        0x0 ./lib/riscv_counters.o
+ .data          0x0000000080003b20        0x0 ./lib/ns16550.o
+ .data          0x0000000080003b20        0x0 /tmp/ccWQSj54.o
+ .data          0x0000000080003b20        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-errno.o)
+ .data          0x0000000080003b20        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-exit.o)
+ .data          0x0000000080003b20      0x748 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-impure.o)
+ .data          0x0000000080004268        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-init.o)
+ .data          0x0000000080004268        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memset.o)
+ .data          0x0000000080004268        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-puts.o)
+ .data          0x0000000080004268        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-strlen.o)
+ .data          0x0000000080004268        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__call_atexit.o)
+ .data          0x0000000080004268        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-findfp.o)
+ .data          0x0000000080004268        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fini.o)
+ .data          0x0000000080004268        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o)
+ .data          0x0000000080004268        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fwalk.o)
+ .data          0x0000000080004268      0x810 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mallocr.o)
+                0x0000000080004268                __malloc_av_
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memchr.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memcpy.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memmove-stub.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mlock.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reallocr.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-sbrkr.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-stdio.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-writer.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-wsetup.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-atexit.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-closer.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fclose.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fflush.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-freer.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-lseekr.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-makebuf.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-readr.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reent.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__atexit.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fstatr.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-isattyr.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libnosys.a(_exit.o)
+ .data          0x0000000080004a78        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtend.o
+
+.data1
+ *(.data1)
+
+.got
+ *(.got.plt)
+ *(.igot.plt)
+ *(.got)
+ *(.igot)
+
+.sdata          0x0000000080004a78       0x48
+                0x0000000080004a78                __SDATA_BEGIN__ = .
+ *(.srodata.cst16)
+ *(.srodata.cst8)
+ .srodata.cst8  0x0000000080004a78        0x8 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-strlen.o)
+ .srodata.cst8  0x0000000080004a80       0x10 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memchr.o)
+ *(.srodata.cst4)
+ *(.srodata.cst2)
+ *(.srodata .srodata.*)
+ .srodata       0x0000000080004a90        0x8 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-impure.o)
+                0x0000000080004a90                _global_impure_ptr
+ *(.sdata .sdata.* .gnu.linkonce.s.*)
+ .sdata         0x0000000080004a98        0x8 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtbegin.o
+                0x0000000080004a98                __dso_handle
+ .sdata         0x0000000080004aa0        0x8 ./lib/ns16550.o
+ .sdata         0x0000000080004aa8        0x8 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-impure.o)
+                0x0000000080004aa8                _impure_ptr
+ .sdata         0x0000000080004ab0       0x10 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mallocr.o)
+                0x0000000080004ab0                __malloc_sbrk_base
+                0x0000000080004ab8                __malloc_trim_threshold
+                0x0000000080004ac0                _edata = .
+                [!provide]                        PROVIDE (edata = .)
+                0x0000000080004ac0                . = .
+                0x0000000080004ac0                __bss_start = .
+
+.sbss           0x0000000080004ac0       0x18
+ *(.dynsbss)
+ *(.sbss .sbss.* .gnu.linkonce.sb.*)
+ .sbss          0x0000000080004ac0       0x18 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mallocr.o)
+                0x0000000080004ac0                __malloc_max_total_mem
+                0x0000000080004ac8                __malloc_max_sbrked_mem
+                0x0000000080004ad0                __malloc_top_pad
+ *(.scommon)
+
+.bss            0x0000000080004ad8       0x68
+ *(.dynbss)
+ *(.bss .bss.* .gnu.linkonce.b.*)
+ .bss           0x0000000080004ad8        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/crt0.o
+ .bss           0x0000000080004ad8       0x38 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtbegin.o
+ .bss           0x0000000080004b10        0x0 ./lib/startup.o
+ .bss           0x0000000080004b10        0x0 ./lib/syscalls.o
+ .bss           0x0000000080004b10        0x0 ./lib/riscv_counters.o
+ .bss           0x0000000080004b10        0x0 ./lib/ns16550.o
+ .bss           0x0000000080004b10        0x0 /tmp/ccWQSj54.o
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-errno.o)
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-exit.o)
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-impure.o)
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-init.o)
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memset.o)
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-puts.o)
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-strlen.o)
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__call_atexit.o)
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-findfp.o)
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fini.o)
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o)
+ .bss           0x0000000080004b10        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fwalk.o)
+ .bss           0x0000000080004b10       0x28 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mallocr.o)
+                0x0000000080004b10                __malloc_current_mallinfo
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memchr.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memcpy.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memmove-stub.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mlock.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reallocr.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-sbrkr.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-stdio.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-writer.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-wsetup.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-atexit.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-closer.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fclose.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fflush.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-freer.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-lseekr.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-makebuf.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-readr.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reent.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__atexit.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fstatr.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-isattyr.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libnosys.a(_exit.o)
+ .bss           0x0000000080004b38        0x0 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtend.o
+ *(COMMON)
+ COMMON         0x0000000080004b38        0x4 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reent.o)
+                0x0000000080004b38                errno
+                0x0000000080004b40                . = ALIGN ((. != 0x0)?0x8:0x1)
+ *fill*         0x0000000080004b3c        0x4 
+LOAD /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/crt0.o
+LOAD /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtbegin.o
+                0x0000000080004b40                __startup_save = .
+
+.startup        0x0000000080000000       0x40
+ startup.o(.text)
+ .text          0x0000000080000000       0x40 ./lib/startup.o
+                0x0000000080000000                _reset
+
+.tohost         0x0000000080000040        0x8
+ *(.tohost)
+ .tohost        0x0000000080000040        0x8 ./lib/startup.o
+                0x0000000080000040                tohost
+                0x0000000080004b40                . = __startup_save
+                0x0000000080004b40                . = ALIGN (0x8)
+                0x0000000080004b40                . = SEGMENT_START ("ldata-segment", .)
+                0x0000000080004b40                . = ALIGN (0x8)
+                0x0000000080004b40                __BSS_END__ = .
+                0x0000000080004340                __global_pointer$ = MIN ((__SDATA_BEGIN__ + 0x800), MAX ((__DATA_BEGIN__ + 0x800), (__BSS_END__ - 0x800)))
+                0x0000000080004b40                _end = .
+                [!provide]                        PROVIDE (end = .)
+                0x0000000080004b40                . = DATA_SEGMENT_END (.)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment        0x0000000000000000       0x11
+ *(.comment)
+ .comment       0x0000000000000000       0x11 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtbegin.o
+                                         0x12 (size before relaxing)
+ .comment       0x0000000000000011       0x12 ./lib/syscalls.o
+ .comment       0x0000000000000011       0x12 ./lib/riscv_counters.o
+ .comment       0x0000000000000011       0x12 ./lib/ns16550.o
+ .comment       0x0000000000000011       0x12 /tmp/ccWQSj54.o
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-errno.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-exit.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-impure.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-init.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-puts.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-strlen.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__call_atexit.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-findfp.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fini.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fwalk.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mallocr.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memchr.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memcpy.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memmove-stub.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mlock.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reallocr.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-sbrkr.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-stdio.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-writer.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-wsetup.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-atexit.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-closer.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fclose.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fflush.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-freer.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-lseekr.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-makebuf.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-readr.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reent.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__atexit.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fstatr.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-isattyr.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libnosys.a(_exit.o)
+ .comment       0x0000000000000011       0x12 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtend.o
+
+.riscv.attributes
+                0x0000000000000000       0x35
+ .riscv.attributes
+                0x0000000000000000       0x33 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/crt0.o
+ .riscv.attributes
+                0x0000000000000033       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtbegin.o
+ .riscv.attributes
+                0x0000000000000068       0x2e ./lib/startup.o
+ .riscv.attributes
+                0x0000000000000096       0x30 ./lib/syscalls.o
+ .riscv.attributes
+                0x00000000000000c6       0x30 ./lib/riscv_counters.o
+ .riscv.attributes
+                0x00000000000000f6       0x30 ./lib/ns16550.o
+ .riscv.attributes
+                0x0000000000000126       0x30 /tmp/ccWQSj54.o
+ .riscv.attributes
+                0x0000000000000156       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-errno.o)
+ .riscv.attributes
+                0x000000000000018b       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-exit.o)
+ .riscv.attributes
+                0x00000000000001c0       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-impure.o)
+ .riscv.attributes
+                0x00000000000001f5       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-init.o)
+ .riscv.attributes
+                0x000000000000022a       0x33 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memset.o)
+ .riscv.attributes
+                0x000000000000025d       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-puts.o)
+ .riscv.attributes
+                0x0000000000000292       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-strlen.o)
+ .riscv.attributes
+                0x00000000000002c7       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__call_atexit.o)
+ .riscv.attributes
+                0x00000000000002fc       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-findfp.o)
+ .riscv.attributes
+                0x0000000000000331       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fini.o)
+ .riscv.attributes
+                0x0000000000000366       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fvwrite.o)
+ .riscv.attributes
+                0x000000000000039b       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fwalk.o)
+ .riscv.attributes
+                0x00000000000003d0       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mallocr.o)
+ .riscv.attributes
+                0x0000000000000405       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memchr.o)
+ .riscv.attributes
+                0x000000000000043a       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memcpy.o)
+ .riscv.attributes
+                0x000000000000046f       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-memmove-stub.o)
+ .riscv.attributes
+                0x00000000000004a4       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-mlock.o)
+ .riscv.attributes
+                0x00000000000004d9       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reallocr.o)
+ .riscv.attributes
+                0x000000000000050e       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-sbrkr.o)
+ .riscv.attributes
+                0x0000000000000543       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-stdio.o)
+ .riscv.attributes
+                0x0000000000000578       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-writer.o)
+ .riscv.attributes
+                0x00000000000005ad       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-wsetup.o)
+ .riscv.attributes
+                0x00000000000005e2       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-atexit.o)
+ .riscv.attributes
+                0x0000000000000617       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-closer.o)
+ .riscv.attributes
+                0x000000000000064c       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fclose.o)
+ .riscv.attributes
+                0x0000000000000681       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fflush.o)
+ .riscv.attributes
+                0x00000000000006b6       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-freer.o)
+ .riscv.attributes
+                0x00000000000006eb       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-lseekr.o)
+ .riscv.attributes
+                0x0000000000000720       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-makebuf.o)
+ .riscv.attributes
+                0x0000000000000755       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-readr.o)
+ .riscv.attributes
+                0x000000000000078a       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-reent.o)
+ .riscv.attributes
+                0x00000000000007bf       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-__atexit.o)
+ .riscv.attributes
+                0x00000000000007f4       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-fstatr.o)
+ .riscv.attributes
+                0x0000000000000829       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libc.a(lib_a-isattyr.o)
+ .riscv.attributes
+                0x000000000000085e       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/../../../../riscv64-unknown-elf/lib/libnosys.a(_exit.o)
+ .riscv.attributes
+                0x0000000000000893       0x35 /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/lib/gcc/riscv64-unknown-elf/9.2.0/crtend.o
+
+.gnu.build.attributes
+ *(.gnu.build.attributes .gnu.build.attributes.*)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x0000000000000000       0xf0
+ *(.debug_aranges)
+ .debug_aranges
+                0x0000000000000000       0x30 ./lib/startup.o
+ .debug_aranges
+                0x0000000000000030       0x30 ./lib/syscalls.o
+ .debug_aranges
+                0x0000000000000060       0x30 ./lib/riscv_counters.o
+ .debug_aranges
+                0x0000000000000090       0x30 ./lib/ns16550.o
+ .debug_aranges
+                0x00000000000000c0       0x30 /tmp/ccWQSj54.o
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info     0x0000000000000000     0x24eb
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x0000000000000000       0x2e ./lib/startup.o
+ .debug_info    0x000000000000002e      0xd7e ./lib/syscalls.o
+ .debug_info    0x0000000000000dac      0x9cc ./lib/riscv_counters.o
+ .debug_info    0x0000000000001778      0x40a ./lib/ns16550.o
+ .debug_info    0x0000000000001b82      0x969 /tmp/ccWQSj54.o
+
+.debug_abbrev   0x0000000000000000      0x7da
+ *(.debug_abbrev)
+ .debug_abbrev  0x0000000000000000       0x14 ./lib/startup.o
+ .debug_abbrev  0x0000000000000014      0x28c ./lib/syscalls.o
+ .debug_abbrev  0x00000000000002a0      0x1fc ./lib/riscv_counters.o
+ .debug_abbrev  0x000000000000049c      0x15e ./lib/ns16550.o
+ .debug_abbrev  0x00000000000005fa      0x1e0 /tmp/ccWQSj54.o
+
+.debug_line     0x0000000000000000      0xae9
+ *(.debug_line .debug_line.* .debug_line_end)
+ .debug_line    0x0000000000000000       0x7c ./lib/startup.o
+ .debug_line    0x000000000000007c      0x497 ./lib/syscalls.o
+ .debug_line    0x0000000000000513      0x1f7 ./lib/riscv_counters.o
+ .debug_line    0x000000000000070a      0x2a0 ./lib/ns16550.o
+ .debug_line    0x00000000000009aa      0x13f /tmp/ccWQSj54.o
+
+.debug_frame    0x0000000000000000      0x460
+ *(.debug_frame)
+ .debug_frame   0x0000000000000000      0x280 ./lib/syscalls.o
+ .debug_frame   0x0000000000000280       0xa0 ./lib/riscv_counters.o
+ .debug_frame   0x0000000000000320      0x100 ./lib/ns16550.o
+ .debug_frame   0x0000000000000420       0x40 /tmp/ccWQSj54.o
+
+.debug_str      0x0000000000000000      0x893
+ *(.debug_str)
+ .debug_str     0x0000000000000000       0x94 ./lib/startup.o
+ .debug_str     0x0000000000000094      0x555 ./lib/syscalls.o
+                                        0x652 (size before relaxing)
+ .debug_str     0x00000000000005e9       0x42 ./lib/riscv_counters.o
+                                        0x595 (size before relaxing)
+ .debug_str     0x000000000000062b      0x24b ./lib/ns16550.o
+                                        0x381 (size before relaxing)
+ .debug_str     0x0000000000000876       0x1d /tmp/ccWQSj54.o
+                                        0x560 (size before relaxing)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+.debug_pubtypes
+ *(.debug_pubtypes)
+
+.debug_ranges
+ *(.debug_ranges)
+
+.debug_macro
+ *(.debug_macro)
+
+.debug_addr
+ *(.debug_addr)
+
+.gnu.attributes
+ *(.gnu.attributes)
+
+/DISCARD/
+ *(.note.GNU-stack)
+ *(.gnu_debuglink)
+ *(.gnu.lto_*)
+OUTPUT(hello/hello elf64-littleriscv)

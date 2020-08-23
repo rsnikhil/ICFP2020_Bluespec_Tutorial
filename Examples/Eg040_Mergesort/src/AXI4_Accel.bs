@@ -1,0 +1,272 @@
+-- Copyright (c) 2013-2020 Bluespec, Inc. All Rights Reserved.
+
+package AXI4_Accel
+where
+
+-- ================================================================
+-- This package defines a memory-to-memory binary merge-sort module
+-- Inputs: A:    the array to sort (array of 64-bit signed integers)
+--         n:    number of elements in A
+--         B:    another array, same size as A, for intermediate storage
+-- Repeatedly merges adjacent already-sorted 'spans' of size 1, 2, 4, 8, ...
+-- back and forth between the two arrays until the span size >= n.
+-- If the final sorted data is in array B, copies it back to A.
+-- Each merge is performed by a mergeEngine
+
+-- ================================================================
+-- Bluespec library imports
+
+import Vector
+import FIFOF
+import GetPut
+import ClientServer
+import Assert
+
+-- ----------------
+-- Additional libs
+
+import Semi_FIFOF
+
+-- ----------------
+-- Project imports
+
+import Utils
+import Fabric_Defs
+import AXI4_Types
+
+import AXI4_Accel_IFC
+import Merge_Engine
+
+-- ================================================================
+-- Local names for N_Accel_... types
+
+-- Number of configuration registers (each is 64-bits)
+-- They are placed at address offsets 0, 8, 16, ...
+
+type N_CSRs = 4
+
+n_config_regs :: Integer
+n_config_regs = valueOf (N_CSRs)
+
+-- ================================================================
+-- The Mergesort module
+
+{-# verilog  mkAXI4_Accel  #-}
+
+mkAXI4_Accel :: Module AXI4_Accel_IFC
+mkAXI4_Accel =
+  module
+    -- Increase verbosity to get more $display debugging outputs
+    let verbosity :: Integer = 0
+
+    staticAssert  (valueOf (Wd_Data) == 64)
+    		  "ERROR: mkMergeSort is designed for 64-bit fabrics only"
+
+    -- Base address for this block's CSRs (Control and Status Registers)
+    rg_addr_base :: Reg  Fabric_Addr <- mkRegU
+
+    -- ================================================================
+    -- Section: Configuration
+
+    -- AXI4 transactor for config requests and responses
+    target_xactor :: AXI4_Slave_Xactor_IFC  Wd_Id Wd_Addr Wd_Data Wd_User  <- mkAXI4_Slave_Xactor
+
+    -- Vector of CSRs (Config and Status Regs)
+    v_csr :: Vector  N_CSRs  (Reg  Fabric_Addr) <- replicateM  (mkReg 0)
+
+    -- Symbolic names for CSR indexes
+    let run    :: Integer = 0    -- 0:stop, 1:run
+        addr_A :: Integer = 1    -- base of array to be sorted
+        addr_B :: Integer = 2    -- workspace array
+        n      :: Integer = 3    -- number of items to be sorted
+
+    rules
+        "rl_handle_config_read_req": when True
+	 ==> do
+                let rda = target_xactor.o_rd_addr.first
+		target_xactor.o_rd_addr.deq
+
+		-- byte offset to csr index (8-byte stride)
+		let csr_index = (rda.araddr - rg_addr_base) >> 3
+
+                rdd :: AXI4_Rd_Data  Wd_Id  Wd_Data  Wd_User
+		 <-
+                    if (   (rda.araddr < rg_addr_base)
+		        || (csr_index >= fromInteger  n_config_regs)) then
+			-- Address below or above csr addr range
+                        return (AXI4_Rd_Data {rid  = rda.arid;
+			                      rdata = _;
+					      rresp = axi4_resp_decerr;    -- Decode error
+					      rlast = True;
+					      ruser = _ })
+	            else
+                        return (AXI4_Rd_Data {rid   = rda.arid;
+			                      rdata = (select  v_csr  csr_index)._read;
+					      rresp = axi4_resp_okay;
+					      rlast = True;
+					      ruser = _ })
+		target_xactor.i_rd_data.enq (rdd)
+
+                -- For debugging (exclude poll-reads  returning 'running')
+                if1 (   ((verbosity == 1) && ((csr_index /= 0) || (rdd.rdata == 0)))
+		     || (verbosity >= 2))
+		    action
+                        $display  "%0d: %m.rl_handle_config_read_req: "  cur_cycle
+			$display  "    "  (fshow  rda)
+			$display  "    "  (fshow  rdd)
+
+        "rl_handle_config_write_req": when True
+	 ==> do
+                let wra = target_xactor.o_wr_addr.first
+		target_xactor.o_wr_addr.deq
+                let wrd = target_xactor.o_wr_data.first
+		target_xactor.o_wr_data.deq
+
+		-- byte offset to csr index (8-byte stride)
+		let csr_index = (wra.awaddr - rg_addr_base) >> 3
+
+                wrr :: AXI4_Wr_Resp  Wd_Id  Wd_User
+		 <-
+                    if (   (wra.awaddr < rg_addr_base)
+		        || (csr_index >= fromInteger  n_config_regs)) then
+			-- Address below or above csr addr range
+                        return (AXI4_Wr_Resp {bid   = wra.awid;
+					      bresp = axi4_resp_decerr;    -- Decode error
+					      buser = _ })
+	            else
+		      do
+		        (select  v_csr  csr_index) := wrd.wdata
+                        return (AXI4_Wr_Resp {bid   = wra.awid;
+					      bresp = axi4_resp_okay;
+					      buser = _ })
+		target_xactor.i_wr_resp.enq (wrr)
+
+                -- For debugging
+                if1 (verbosity >= 1)
+		    action
+                        $display  "%0d: %m.rl_handle_config_write_req: "  cur_cycle
+			$display  "    "  (fshow  wra)
+			$display  "    "  (fshow  wrd)
+
+    -- ================================================================
+    -- Section: Merge sort behavior
+
+    -- Other local state
+    merge_engine :: Merge_Engine_IFC <- mkMerge_Engine
+
+    -- 'span' starts at 1, and doubles on each merge pass
+    rg_span :: Reg  Fabric_Addr <- mkRegU
+
+    -- p1 and p2 point at the two vectors, alternating between A and B after each pass
+    rg_p1   :: Reg  Fabric_Addr <- mkRegU
+    rg_p2   :: Reg  Fabric_Addr <- mkRegU
+
+    -- On each pass, i is index of next pair of spans to be merged
+    rg_i    :: Reg  Fabric_Addr <- mkRegU
+
+    -- The following rules encode this "process" (state machine)
+    --         while True 
+    --             L0: when c0 action0
+    --             L1: while (c1)
+    --                 L2: action2
+    --                 L3: while (c3)
+    --                         L4: action4
+    --                 L5: action5
+    --             L6: action6
+    --             L7: action7
+
+    rg_step :: Reg  (Bit  8) <- mkReg (0)
+
+    rules
+        "L0": when ((rg_step == 0) && ((v_csr !! run)._read /= 0))
+	 ==> do
+                if1 (verbosity >= 1)
+		    ($display  "%0d: %m.L0:"  cur_cycle)
+                rg_span := 1
+	        rg_p1   := (v_csr !! addr_A)._read
+	        rg_p2   := (v_csr !! addr_B)._read
+		rg_step := 1
+
+        -- For span = 1, 2, 4, ... until >= n
+	"L1": when (rg_step == 1)
+	 ==> do
+                if1 (verbosity >= 1)
+		    ($display  "%0d: %m.L1: rg_span %0d  n %0d"  cur_cycle  rg_span  (v_csr !! n)._read)
+	        rg_step := if (rg_span < (v_csr !! n)._read) then 2 else 6
+
+        "L2": when (rg_step == 2)
+	 ==> do
+                if1 (verbosity >= 2)
+		    ($display  "%0d: %m.L2: span = %0d"  cur_cycle  rg_span)
+		rg_i := 0
+		rg_step := 3
+
+	"L3": when (rg_step == 3)
+	 ==> do
+                if1 (verbosity >= 2)
+		    ($display  "%0d: %m.L3: rg_i = %0d  n %0d"  cur_cycle  rg_i  (v_csr !! n)._read)
+	        rg_step := if (rg_i < (v_csr !! n)._read) then 4 else 5
+
+        -- Generate tasks to merge p1 [i..i+span-1] and p1 [i+span..i+2*span-1]
+        -- into p2 [i..i+2*span-1]
+        "L4": when (rg_step == 4)
+	 ==> do
+                if1 (verbosity >= 2)
+		    ($display  "%0d: %m.L4: dispatching task i %0d, span %0d, to engine"
+		               cur_cycle  rg_i  rg_span)
+		merge_engine.start  0  rg_i  rg_span  rg_p1  rg_p2  (v_csr !! n)._read
+		rg_i := rg_i + (rg_span << 1)
+		rg_step := 3
+
+        -- Exchange p1 and p2, double the span
+        "L5": when (rg_step == 5)
+	 ==> do
+		rg_p1   := rg_p2
+		rg_p2   := rg_p1
+		rg_span := rg_span << 1
+	        rg_step := 1
+
+        -- If final sorted array is in B, copy it back to A
+        "L6": when (rg_step == 6)
+	 ==> do
+                if (rg_p1 == (v_csr !! addr_B)._read) then do
+                    if1 (verbosity >= 1)
+                        ($display  "%0d: %m.L6_then: Final copy back to original array"
+			           cur_cycle)
+                    merge_engine.start  0  0  (v_csr !! n)._read  rg_p1  rg_p2  (v_csr !! n)._read
+                 else
+	            if1 (verbosity >= 1)
+		        ($display  "%0d: %m.L6_else: No final copy to original array necessary"
+			           cur_cycle)
+                rg_step := 7
+
+        -- Wait until task queue is empty and all merge engines are done
+        "L7": when ((rg_step == 7) && merge_engine.done)
+	 ==> do
+	        if1 (verbosity >= 1)
+		    ($display  "%0d: %m.L7: all done"
+		               cur_cycle)
+                (v_csr !! run) := 0
+		rg_step := 0
+
+    -- ----------------------------------------------------------------
+    -- INTERFACE
+
+    interface
+        init  id  addr_base  addr_lim = do
+	    rg_step        := 0
+            rg_addr_base   := addr_base
+            (v_csr !! run) := 0
+	    target_xactor.reset
+            merge_engine.init
+	    if1 (verbosity >= 1) do
+	        $display  "%0d: %m.init: " cur_cycle
+	        $display  "    id %0x  addr_base %0x  addr_lim %0x"  id  addr_base  addr_lim
+
+        slave  = target_xactor.axi_side
+
+	interrupt_req = False
+
+        master = merge_engine.initiator_ifc
+
+-- ================================================================

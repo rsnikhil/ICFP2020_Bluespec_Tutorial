@@ -1,0 +1,292 @@
+-- Copyright (c) 2013-2020 Bluespec, Inc. All Rights Reserved.
+
+package Merge_Engine
+where
+
+-- ================================================================
+-- This package is a component of a memory-to-memory mergesort module.
+-- Merges two already sorted segments:
+-- Input segments:
+--     p1 [i0 .. i0+span-1]    and    p1 [i0+span .. i0+2*span-1]
+-- Output segment:
+--     p2 [i0 .. i0+2*span-1]
+
+-- ================================================================
+-- Bluespec library imports
+
+import FIFOF
+import GetPut
+import ClientServer
+
+-- ----------------
+-- Additional libs
+
+import Semi_FIFOF
+
+-- ----------------
+-- Project imports
+
+import Utils
+import CReg_Classic
+import Fabric_Defs
+import AXI4_Types
+
+-- ================================================================
+-- Help-function: create an AXI4 read-request
+
+fv_mkMemReadReq :: (Bit  Wd_Id) -> Fabric_Addr -> AXI4_Rd_Addr  Wd_Id  Wd_Addr  Wd_User
+fv_mkMemReadReq  id  addr =
+    AXI4_Rd_Addr {arid     = id;
+    		  araddr   = addr;
+		  arlen    = 0;            -- burst length = 0+1
+		  arsize   = axsize_8;     -- 8 bytes
+		  arburst  = axburst_fixed;
+		  arlock   = axlock_normal;
+		  arcache  = arcache_dev_nonbuf;
+		  arprot   = axprot_0_unpriv ++ axprot_1_non_secure ++ axprot_2_data;
+		  arqos    = 0;
+		  arregion = 0;
+		  aruser   = _ }
+
+-- ================================================================
+-- Help-function: create an AXI4 write-request
+
+fv_mkMemWriteReq :: (Bit  Wd_Id) -> Fabric_Addr -> Fabric_Data -> (AXI4_Wr_Addr  Wd_Id  Wd_Addr  Wd_User,
+                                                                   AXI4_Wr_Data  Wd_Data  Wd_User)
+fv_mkMemWriteReq  id  addr  wdata = (wra, wrd)
+  where
+    wra = AXI4_Wr_Addr {awid     = id;
+    	  	        awaddr   = addr;
+			awlen    = 0;            -- burst length = 0+1
+			awsize   = axsize_8;     -- 8 bytes
+			awburst  = axburst_fixed;
+			awlock   = axlock_normal;
+			awcache  = awcache_dev_nonbuf;
+			awprot   = axprot_0_unpriv ++ axprot_1_non_secure ++ axprot_2_data;
+			awqos    = 0;
+			awregion = 0;
+			awuser   = _ }
+
+    wrd = AXI4_Wr_Data {wdata    = wdata;
+    	  	        wstrb    = 0xFF;      -- 8 bytes
+			wlast    = True;
+			wuser    = _ }
+
+-- ================================================================
+-- Interface
+
+interface Merge_Engine_IFC =
+   -- Initialize the module
+   init :: Action
+
+   -- Start the merge
+   start :: (UInt  16) ->        -- engineId
+            Fabric_Addr ->       -- i0
+	    Fabric_Addr ->       -- span
+	    Fabric_Addr ->       -- p1
+	    Fabric_Addr ->       -- p2
+	    Fabric_Addr ->       -- n
+	    Action
+   done  :: Bool
+
+   -- Interface to access memory
+   initiator_ifc :: AXI4_Master_IFC  Wd_Id  Wd_Addr  Wd_Data  Wd_User
+
+-- ================================================================
+-- The following is a "tuning" constant that limits how many mem
+-- requests can be in flight between rl_req0 and rl_rsp0, and between
+-- rl_req1 and rl_rsp1.  The FIFOs f_data0 and f_data1 are sized
+-- accordingly.  If not so limited, one can have head-of-line blocking
+-- in the shared FIFO f_memRsps.  The CRegs crg_credits0 and
+-- crg_credits1 are initialized to this value (and must be large
+-- enough to hold this value).
+
+-- The best value will depend on system properties like memory
+-- latency, throughput, how the memory system deals with contention,
+-- etc.  Thus we call it a "tuning" parameter.
+
+max_n_reqs_in_flight :: Integer
+max_n_reqs_in_flight = 8
+
+-- ================================================================
+-- The merge-engine module implementation
+
+{-# verilog mkMerge_Engine #-}
+
+mkMerge_Engine :: Module  Merge_Engine_IFC
+mkMerge_Engine =
+  module
+    let verbosity :: Integer = 0
+
+    initiator_xactor :: AXI4_Master_Xactor_IFC  Wd_Id Wd_Addr Wd_Data Wd_User  <- mkAXI4_Master_Xactor;
+
+    -- Allows $displays from multiple engines to be disambiguated
+    rg_engineId :: Reg  (UInt  16)  <- mkRegU
+
+    rg_span     :: Reg  Fabric_Addr <- mkRegU
+    rg_p1       :: Reg  Fabric_Addr <- mkRegU    -- source array pointer
+    rg_p2       :: Reg  Fabric_Addr <- mkRegU    -- destination array pointer
+    rg_n        :: Reg  Fabric_Addr <- mkRegU    -- size of source/destination arrays
+    rg_i0req    :: Reg  Fabric_Addr <- mkRegU    -- index of next i0 request
+    rg_i0rsp    :: Reg  Fabric_Addr <- mkRegU    -- index of next i0 response
+    rg_i0_lim   :: Reg  Fabric_Addr <- mkRegU    -- initialized to i0+span
+    rg_i1req    :: Reg  Fabric_Addr <- mkRegU    -- index of next i1 request
+    rg_i1rsp    :: Reg  Fabric_Addr <- mkRegU    -- index of next i1 response
+    rg_i1_lim   :: Reg  Fabric_Addr <- mkRegU    -- initialized to i0+2*span = i1+span
+    rg_j        :: Reg  Fabric_Addr <- mkRegU    -- index of next output item
+
+    rg_running  :: Reg  Bool <- mkReg False
+
+    crg_credits0       :: Array  (Reg  (UInt  8)) <- mkCRegU  2
+    crg_credits1       :: Array  (Reg  (UInt  8)) <- mkCRegU  2
+    crg_pending_writes :: Array  (Reg  (UInt  8)) <- mkCRegU  2
+
+    -- FIFOs holding responses: must be as deep as allowed # of reqs in flight
+    f_data0 :: FIFOF  Fabric_Data <- mkSizedFIFOF (max_n_reqs_in_flight)
+    f_data1 :: FIFOF  Fabric_Data <- mkSizedFIFOF (max_n_reqs_in_flight)
+
+    -- ================================================================
+    -- BEHAVIOR
+
+    rules
+	-- ----------------
+        -- Generate read reqs for segment 0
+        "rl_req0" : when  (rg_running
+		    	   && (rg_i0req < rg_i0_lim)
+			   && ((read_CReg  crg_credits0  1) /= 0))
+	 ==> do
+	        let rda = fv_mkMemReadReq  0  (rg_p1 + (rg_i0req << 3))
+		initiator_xactor.i_rd_addr.enq  rda
+
+                rg_i0req := rg_i0req + 1
+                (select_CReg  crg_credits0  1) := (read_CReg  crg_credits0  1) - 1
+                if1 (verbosity >= 2)
+		    ($display  "%0d: %m[%0d].rl_req0: requesting [i0req = %0d]; credits0 %0d"
+                               cur_cycle  rg_engineId  rg_i0req  (read_CReg  crg_credits0  1))
+
+	-- ----------------
+        -- Receive read rsps for segment 0
+        "rl_rsp0": when  (initiator_xactor.o_rd_data.first.rid == 0)
+	 ==> do
+                let rdd = initiator_xactor.o_rd_data.first
+                initiator_xactor.o_rd_data.deq
+                if1 (verbosity >= 2)
+		    ($display  "%0d: %m[%0d].rl_rsp0: response [i0rsp] = %0d, credits0 %0d"
+                               cur_cycle  rg_engineId  rdd.rdata  (read_CReg  crg_credits0  1))
+                f_data0.enq  rdd.rdata
+
+	-- ----------------
+        -- Generate read reqs for segment 1
+        "rl_req1": when  (rg_running && (rg_i1req < rg_i1_lim) && ((read_CReg  crg_credits1  1) /= 0))
+	 ==> do
+	        let rda = fv_mkMemReadReq  1  (rg_p1 + (rg_i1req << 3))
+		initiator_xactor.i_rd_addr.enq  rda
+
+                rg_i1req := rg_i1req + 1
+                (select_CReg  crg_credits1  1) := (read_CReg  crg_credits1  1) - 1
+                if1 (verbosity >= 2)
+		    ($display  "%0d: %m[%0d].rl_req1: requesting [i1req = %0d]; credits1 %0d"
+                               cur_cycle  rg_engineId  rg_i1req  (read_CReg  crg_credits1  1))
+
+	-- ----------------
+        -- Receive read rsps for segment 1
+        "rl_rsp1" : when  (initiator_xactor.o_rd_data.first.rid == 1)
+	 ==> do
+                let rdd = initiator_xactor.o_rd_data.first
+                initiator_xactor.o_rd_data.deq
+                if1 (verbosity >= 2)
+		    ($display  "%0d: %m[%0d].rl_rsp1: response [i1rsp] = %0d, credits1 %0d"
+                               cur_cycle  rg_engineId  rdd.rdata  (read_CReg  crg_credits1  1))
+                f_data1.enq  rdd.rdata
+
+	-- ----------------
+        -- Merge responses into output
+        "rl_merge": when   (rg_running && ((rg_i0rsp < rg_i0_lim) || (rg_i1rsp < rg_i1_lim)))
+	 ==> do
+                let take0 :: Bool = if ((rg_i0rsp < rg_i0_lim) && (rg_i1rsp < rg_i1_lim)) then
+                                       (f_data0.first <= f_data1.first)
+                                    else
+		                       (rg_i0rsp < rg_i0_lim)
+                y :: Fabric_Data <- if (take0) then do
+                                        f_data0.deq
+                                 	rg_i0rsp := rg_i0rsp + 1
+					(select_CReg  crg_credits0  0) := (read_CReg  crg_credits0  0) + 1
+                                 	return  f_data0.first
+                             	    else do
+                                        f_data1.deq
+                                 	rg_i1rsp := rg_i1rsp + 1
+					(select_CReg  crg_credits1  0) := (read_CReg  crg_credits1  0) + 1
+				 	return  f_data1.first
+
+	        let (wra,wrd) = fv_mkMemWriteReq  _  (rg_p2 + (rg_j << 3))  y
+
+		initiator_xactor.i_wr_addr.enq  wra
+		initiator_xactor.i_wr_data.enq  wrd
+		(select_CReg  crg_pending_writes  0) := (read_CReg  crg_pending_writes  0) + 1
+
+                if1 (verbosity >= 1)
+		    ($display  "%0d: %m[%0d].rl_merge: writing [%0d] := %0d"  cur_cycle  rg_engineId  rg_j  y)
+                rg_j := rg_j + 1
+
+	-- ----------------
+        "rl_drain_write_rsps": when  (True)
+	 ==> do
+	        initiator_xactor.o_wr_resp.deq
+		(select_CReg  crg_pending_writes  1) := (read_CReg  crg_pending_writes  1) - 1
+
+
+	-- ----------------
+        "rl_finish": when   (rg_running
+	                     && (rg_i0rsp >= rg_i0_lim)
+			     && (rg_i1rsp >= rg_i1_lim)
+			     && ((read_CReg  crg_pending_writes  1) == 0))
+	 ==> rg_running := False
+
+    -- ================================================================
+    -- INTERFACE
+
+    interface
+	-- ----------------
+        init = do
+            rg_running := False
+	    initiator_xactor.reset
+            f_data0.clear
+            f_data1.clear
+
+	-- ----------------
+        start  engineId  i0  span  p1  p2  n = do
+            rg_engineId := engineId
+            rg_span := span
+            rg_p1   := p1
+            rg_p2   := p2
+            rg_n    := n
+
+            rg_i0req := i0
+            rg_i0rsp := i0
+
+            let i1 = min  (i0 + span)  n
+            rg_i0_lim := i1
+            rg_i1req  := i1
+            rg_i1rsp  := i1
+            let i1_lim = min (i0 + (span << 1))  n
+            rg_i1_lim := i1_lim
+
+            rg_j := i0
+
+            (select_CReg  crg_credits0        1) := fromInteger (max_n_reqs_in_flight)
+            (select_CReg  crg_credits1        1) := fromInteger (max_n_reqs_in_flight)
+	    (select_CReg  crg_pending_writes  1) := 0;
+
+            rg_running := True
+            if1 (verbosity >= 1)
+	        ($display  "%0d: Merge Engine %0d: [%0d..%0d][%0d..%0d]"
+                           cur_cycle  engineId  i0  (i1-1)  i1  (i1_lim - 1))
+          when (not rg_running)
+
+	-- ----------------
+        done = (not rg_running)
+
+	-- ----------------
+        initiator_ifc = initiator_xactor.axi_side
+
+-- ================================================================
