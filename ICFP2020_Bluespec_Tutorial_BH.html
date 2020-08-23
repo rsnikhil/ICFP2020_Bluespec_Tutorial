@@ -990,7 +990,14 @@ separate editor window.  Here&#8217;s the source:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>Unresolved directive in ICFP2020_Bluespec_Tutorial.adoc - include::./Examples/Eg020a_HelloWorld/src/Top.bs[tag=all]</code></pre>
+<pre class="highlight"><code>mkTop :: Module Empty
+mkTop =
+  module
+    rules
+      "rl_print_answer": when True ==&gt; do
+          $display "\n\n***** Deep Thought says: Hello, World! *****"
+          $display "      And the answer is: %0d (or, in hex: 0x%0h)\n"  42  42
+          $finish</code></pre>
 </div>
 </div>
 <hr>
@@ -4923,7 +4930,7 @@ in _Proc. ACM Intl. Conf. on Functional Programming (ICFP),
 <div id="footer">
 <div id="footer-text">
 Version v0.1<br>
-Last updated 2020-08-22 22:46:17 EDT
+Last updated 2020-08-23 07:29:58 EDT
 </div>
 </div>
 </body>

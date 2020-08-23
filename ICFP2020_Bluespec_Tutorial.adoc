@@ -305,7 +305,14 @@ separate editor window.  Here's the source:
 
 [source]
 ----
-include::./Examples/Eg020a_HelloWorld/src/Top.{SRC_EXT}[tag=all]
+mkTop :: Module Empty
+mkTop =
+  module
+    rules
+      "rl_print_answer": when True ==> do
+          $display "\n\n***** Deep Thought says: Hello, World! *****"
+          $display "      And the answer is: %0d (or, in hex: 0x%0h)\n"  42  42
+          $finish
 ----
 
 // ----------------------------------------------------------------
