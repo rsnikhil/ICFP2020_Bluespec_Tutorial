@@ -1,0 +1,3206 @@
+= Designing Hardware Systems and Accelerators with Open-Source BH (Bluespec Haskell)
+Rishiyur S. Nikhil, Bluespec, Inc. (c) 2020
+:revnumber: v0.1
+:revdate: 2020-08-10
+:revremark: First draft
+:sectnums:
+:toc:
+:toclevels: 3
+:toc: left
+:toc-title: Contents
+:description: Bluespec Tutorial
+:keywords: Bluespec, BH, BSV, Bluespec Classic, HLHDL, High-Level Hardware Design, RISC-V
+
+ifdef::BSV_MODE[]
+:BLANG: BSV
+:SRC_EXT: bsv
+:TL: #(
+:TR: )
+:TL1: #(
+:TR1: )
+endif::[]
+
+ifdef::BH_MODE[]
+:BLANG: BH
+:SRC_EXT: bs
+:TL:
+:TR:
+:TL1: (
+:TR1: )
+endif::[]
+
+Tutorial at ICFP 2020 (25th ACM SIGPLAN International Conference on Functional Programming)
+
+Online, August 23, 2020, 14:00h-17:00h EDT
+
+Tutorial materials at: https://github.com/rsnikhil/ICFP2020_Bluespec_Tutorial[]
+
+// ****************************************************************
+// ****************************************************************
+
+'''
+
+[.center]
+ABSTRACT
+--------
+
+Have you ever considered designing and implementing a piece of digital
+hardware, such as an accelerator on an attached FPGA for a complex
+computation (Machine Learning, Computer Vision, ...), or just for fun,
+but were afraid that hardware design was too far from your wheelhouse?
+
+In this tutorial we hope to leverage your knowledge of Haskell to
+demystify this, using a lecture + demonstration format which you can
+follow along on your laptop during the tutorial.  We will use Bluespec
+BH, which is a high-level hardware design language using Haskell
+syntax and types.  BH and its sibling BSV are mature,
+industrial-strength hardware design languages, with over 20 years of
+development; they have been used to design complex components in
+commercial shipping chips.  The `bsc` tool for compiling BH and BSV to
+Verilog was open-sourced in January 2020.
+
+For background preparation we only assume you know Haskell, and
+perhaps nothing about hardware design.
+
+We will start with a simple "`Hello World!`" example, but rapidly climb
+through the gears to end with a complete, Linux-capable RISC-V CPU
+controlling a pipelined memory-to-memory array-sorting accelerator
+(all the materials for this are open-source).
+
+At the end of the tutorial, we hope you will:
+
+* Understand how a Haskell-based language (Haskell syntax, Haskell
+    types) can be used to describe complex hardware system *STRUCTURE*,
+    and how _Guarded Atomic Actions_ (rewrite rules) can be used to
+    describe complex hardware system *BEHAVIOR* in a composable way (and
+    also enabling formal verification).
+
+* Feel: "`I can do this!`", i.e., that you can read and modify the
+    open-source designs shown in the tutorial, or even create your own
+    hardware designs.
+
+// ================================================================
+'''
+
+== Please install the following.
+
+To study the code and run all the examples in this tutorial, please
+install the following (everything here is free and open-source):
+
+* The `bsc` compiler from https://github.com/B-Lang-org/bsc[].
+
+* The open-source Verilog simulator `verilator` from
+    https://www.veripool.org[] + 
+
+    ** Alternatively, you can install the open-source Verilog
+       simulator `iverilog`, available standardly in common package
+       installers.  IVerilog is much slower; it is fine for small
+       examples, but simulation of large designs is not so pleasant.
+
+* The open-source waveform viewer `gtkwave` (available standardly in
+    common package installers)
+
+* Materials for this tutorial, from https://github.com/rsnikhil/ICFP2020_Bluespec_Tutorial[].
+
+* The Bluespec _Flute_ open-source RISC-V CPU, from https://github.com/bluespec/Flute[].
+
+Ubuntu and Debian Linux are the preferred platforms, but people also use MacOS.
+
+// ****************************************************************
+// ****************************************************************
+// Section
+'''
+== Introduction
+
+// ================================================================
+// SLIDE
+'''
+=== Why Should One Design and Create Hardware?
+
+Any computation can be coded in a programming language and executed on
+a general-purpose computing platform (from small single-chip embedded
+computers to rack-mounted servers).  Much of the world's hardware
+design activity is perhaps indeed about general-purpose computing
+platforms.
+
+But any computation can also be implemented directly in hardware,
+typically with _orders of magnitude_ (often several) advantage in
+speed and energy efficiency.  Why?
+
+- Removal of one or more layers of interpretation (starting with the
+    fetch-execute loop of a general-purpose CPU, and possibly more
+    layers above that)
+
+- Exploit massive, fine-grain (temporal and spatial) parallelism
+
+- Exploit massive memory bandwidth due to multiple, distributed, custom memories
+
+// ================================================================
+// SLIDE
+'''
+*Why Should One Design and Create Hardware?* (Contd.)
+
+You servers, laptops and mobile devices already exploit this.  Examples:
+
+* Virtual memory address translation and protection
+* Floating point units
+* Graphics
+* Video encoders/decoders
+* Network protocol offload engines (TCP, UDP, ...)
+* Signal processing for wireless communcation, GPS
+
+_Each of these computations can of course be coded in software, but that would not meet speed and/or energy targets._
+
+More recently, as it becomes increasingly difficult to maintain
+Moore's Law and Dennard Law scaling in silicon we are seeing more and
+more "`accelerators`":
+
+* Neural nets, Computer Vision, Crypto, Radar/Lidar, ...
+
+// ================================================================
+// SLIDE
+'''
+=== Why _Shouldn't_ One Design and Create Hardware?
+
+It takes a lot of time and effort, and possibly expense; and they're a lot less flexible:
+
+* ASIC^1^ designs take months-to-years to develop, with multi-person teams and millions of dollars.
+  ** Only high volume and frequent use justify this.
+
+* FPGA^1^ designs can take hours-to-months to develop.
+  ** (Mostly because their tools are not as highly developed as software compilers and debuggers.)
+
+* Hardware designs are typically single-purpose; they're wasted if not in (frequent) use!
+
+^1^ _We'll demystify "`ASIC`" and "`FPGA`" shortly._
+
+// ================================================================
+// SLIDE
+'''
+=== The flows/processes for developing hardware
+
+.In this tutorial, we will focus on BH -> Simulator, and also describe -> FPGA
+[#Fig_HW_Dev_Flows]
+image::Figures/HW_Dev_Flows.png[align="center"]
+
+// ================================================================
+// SLIDE
+'''
+=== What is an FPGA?
+.Simplified model of an FPGA
+[#Fig_FPGA_Model]
+image::Figures/FPGA_Model.png[align="center", width=400]
+
+Imagine an FPGA as a pre-built set of components laid out like "`Manhattan city blocks`".
+
+* Each block has a collection of AND gates, OR gates, multiplexers ("`muxes`"), ...^1^
+* The "`streets`" and "`avenues`" are laid out with wires ("`utility cables and pipes`")
+* By making certain connections (red dots in figure), we can connect
+    an output from one city block to an input in another city block.
+* By choosing these connections, we can make the FPGA look like any circuit we want
+
+FPGA tools produce a "`bitfile`"; each bit is a red dot, i.e., it
+controls whether connection is made or not. + 
+
+^1^*_But don't worry: we are not going to descend to this ``machine language'' level;
+bitfiles are produced for us by FPGA tools (compilers)!_*
+
+^2^_More generally, rather than gates, FPGAs provide "`LUTs`"
+(Lookup-Tables) which can themselves be programmed to act like
+specific gates or combinational circuits. Other resources include
+registers, SRAMs (memories), DSPs (digital signal processors), and
+more._
+
+// ================================================================
+// SLIDE
+'''
+=== How/Where can I get an FPGA and FPGA/ASIC tools?
+
+* You can buy off-the-shelf "`development boards`" from FPGA vendors,
+    which are complete circuit boards containing an FPGA and lots of
+    surrounding circuitry (DRAM, connectivity such as USB cables, PCIe
+    connectors, Ethernet, ...)
+
+    ** Boards range from a few tens of dollars to thousands of
+       dollars, depending on capacity of the FPGA, speed of the FPGA,
+       resources on the FPGA, resources on the board, etc.
+
+* Nowadays cloud-computing providers (e.g., Amazon AWS, Google) allow
+    you to select "`FPGA instances`" in the cloud, so that you are
+    connected to servers that have attached FPGA boards (typically
+    over PCIe connectors).
+
+* Sadly, FPGA and ASIC tools are still mostly vendor-proprietary
+
+    ** FPGA tools are often available for free for evaluation, and
+       with FPGA purchases, and free on cloud platforms.
+    ** ASIC tools and libraries are expensive, but can be free/cheap for academia.
+    ** https://www.symbioticeda.com[Symbiotic EDA] is one company that
+       trying to change this (free and open-source tools)
+       *** They also do tools and service for _formal verification_ of hardware systems.
+
+// ================================================================
+// SLIDE
+'''
+=== Plan for this tutorial
+
+* We will start with a simple "Hello World!" example.  Like all
+    Hello-World examples, the purpose is actually to familiarize you
+    with the "`look and feel`" of the language, tools and flow.
+
+* We'll do a hardware concurrent "`Bubblesort`" example.  Bubblesort
+  is not a good sorting algorithm, but the purpose here is to
+  familiarize you with parallelism and concurrency in hardware.
+
+* We'll do a hardware, concurrent, highly pipelined, memory-to-memory
+  "`Mergesort`" example.  Being memory-to-memory, it is capable of
+  sorting large arrays.  We'll connect this as an "`accelerator`" in a
+  small, but complete, Linux-capable, RISC-V CPU-based, "`SoC`"
+  (System on a Chip).
+
+_All the tools and materials in this tutorial are free and open-source._
+
+// ================================================================
+// SLIDE
+'''
+=== A note on the _bsc_ tool and Bluespec BH and BSV code syntax
+
+The central tool we use is _bsc_, a compiler that converts our source
+code into Verilog RTL.  It was released as a
+https://github.com/B-Lang-org/bsc[free and open-source tool]
+in January 2020..
+
+The _bsc_ compiler supports two equivalent and interchangeable
+source-code syntaxes:
+
+BH:: Bluespec Haskell, also known as Bluesepec Classic
+
+BSV:: Bluespec SystemVerilog
+
+In this tutorial we use BH, since the ICFP audience is familiar with
+Haskell.  All the code we show can also be done in BSV.
+
+Some of the code we use (in particular the RISC-V CPU and components)
+were written in BSV.
+
+// ****************************************************************
+// ****************************************************************
+// Section; SLIDE
+'''
+== Limbering up: "`Hello World!`"
+
+// ================================================================
+// SLIDE
+'''
+=== The code
+
+Please visit this directory
+[source]
+----
+$ cd Examples/Eg020a_HelloWorld
+----
+
+And bring up the file `src/Top.bs` in an editor, preferably in a
+separate editor window.  Here's the source:
+
+[source]
+----
+include::./Examples/Eg020a_HelloWorld/src/Top.{SRC_EXT}[tag=all]
+----
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== STRUCTURE: executing a BH/BSV program describes a piece of hardware
+
+.A visualization of the hardware for our Hello World example
+[#Hello_World_A_0]
+image::./Figures/Hello_World_A_0.png[align="center", width=600]
+
+* We define a single top-level identifier `mkTop`, giving it a type
+    declaration (`Module Empty`) and a value binding.  A value of type
+    `Module t` is a generator of hardware objects (it can be
+    "`instantiated`" multiple times).
+
+* The keyword `module` introduces a monadic expression, similar to Haskell's `do`.
+    The monad "`collects`" various things like sub-modules, rules and interfaces
+    ** In this case it contains a single `rules` expression.
+
+* The `rules` keyword introduces one or more _rules_ (here, just one).
+    ** A rule has a _condition expression_ (here, `True`), of type `Bool`
+    ** A rule has an `Action` _body_ (here, two `$display` actions and a `$finish` action)
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== BEHAVIOR: executing the hardware
+
+* A _rule_ is like an infinite process:
+    ** It can "`execute`" (or "`fire`") whenever its _Bool_ condition is true.^1^
+    ** A rule body is a recursive composition of _Actions_ (and the rule body itself has type _Action_).
+    ** When a rule fires, all its Actions are performed "`simultaneously`" and "`instantaneously`"
+        (there is no temporal ordering amongst the Actions in a rule).
+
+In this example, as soon as we begin execution, the rule fires
+(because its condition is True), and it performs the three primitive
+Actions in its body, "`simultaneously`".^2^
+
+
+^1^ This is a first approximation; qualifications to come later.
+
+^2^ These primitive actions have intuitive interpretations when we run
+a simulation: `$display` will output the argument string on the
+terminal, and `$finish` will terminate the simulation.  What can they
+mean in real hardware (we'll have a fanciful interpretation in a later
+section).
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Let's do it! Bluesim compile, link and simulate
+
+===== Compile ...
+
+[source]
+----
+$ make b_compile
+mkdir  -p build_b_sim
+Compiling for Bluesim ...
+bsc -u -sim -simdir build_b_sim -bdir build_b_sim -info-dir build_b_sim -keep-fires  -aggressive-conditions  -no-warn-action-shadowing  -check-assert  -cpp +RTS -K128M -RTS  -show-range-conflict      -p src:../Resources:+ -g mkTop  src/Top.bs 
+checking package dependencies
+compiling src/Top.bs
+code generation for mkTop starts
+Elaborated module file created: build_b_sim/mkTop.ba
+All packages are up to date.
+Compiling for Bluesim finished
+----
+
+`bsc` is the Bluespec compiler for BH and BSV.  Its command-line flags can be listed with `bsc -help`; they are described in detail in <<UserGuide>>.  Here,
+
+* `-sim`: compile for Bluesim (native-compiled simulation)
+* `src/Top.bs`:   Top-level file (which, in general, may contain multiple modules)
+* `-g`: Name of top-level module
+* `-p`: Search path for source files. `+` is shorthand for standard `bsc` libraries. 
+* `-u`: Compile imported packages as necessary (this example has none)
+
+On compiling, `bsc` produces various intermediate files with
+extensions like `.bo`, `.ba`, `.sched`, ... which can be placed into
+separate directories to avoid clutter.
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+===== ... link ...
+
+[source]
+----
+$ make b_link
+Linking for Bluesim ...
+bsc -e mkTop -sim -o mkTop_b_sim -simdir build_b_sim -bdir build_b_sim -info-dir build_b_sim -keep-fires -p src:../Resources:+
+Bluesim object created: build_b_sim/mkTop.{h,o}
+Bluesim object created: build_b_sim/model_mkTop.{h,o}
+Simulation shared library created: mkTop_b_sim.so
+Simulation executable created: mkTop_b_sim
+Linking for Bluesim finished
+----
+
+Here,
+
+* `-e`: name of top-level module to be linked (`bsc` will chase modules that it depends on)
+* `-o`: name of executable produced
+* `-sim`: link for Bluesim
+
+Produces `mkTop_b_sim.so`, a standard ELF shared object, and `mkTop_b_sim`, a short shell script that loads and runs it.
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+===== ... simulate ...
+
+[source]
+----
+$ make b_sim
+Bluesim simulation ...
+./mkTop_b_sim
+
+
+***** Deep Thought says: Hello, World! *****
+      And the answer is: 42 (or, in hex: 0x2a)
+
+Bluesim simulation finished
+----
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== A (fanciful) visualization of Verilog hardware described by the code
+
+.A (fanciful) visualization of the Verilog ``hardware'' for our Hello World example
+[#Hello_World_A_1]
+image::./Figures/Hello_World_A_1.png[align="center", width=600]
+
+(_Relax, don't worry, this Verilog detail is just to develop
+intuition about what's under the covers, we won't be coding or
+thinking at this level._)
+
+* Clocked digital circuit modules usually have "`reset`" (`RST_N`) and
+    "`clock`" (`CLK`) input signals.  These are _digital_ signals,
+    i.e., their analogue voltages sit at one of two fixed values,
+    variously called "`low`" and "`high`", or "`0`" and "`1`", or
+    "`false`" and "`true`", or "`unasserted`" and "`asserted`".
+
+  ** Reset signals are often inverted, i.e., asserted when low, hence
+     the name `RST_N` (for negative or negated).
+
+* A clock oscillates between 0 and 1; the transitions are often called
+  "`posedge`" and "`negedge`".
+
+* The reset signal is usually asserted only once, at the start of
+  execution, allowing all the circuits to enter into a known initial
+  state.  Subsequently, the circuit's behavior is determined by the
+  actions at the clock edges.
+
+* All actions are conceptually performed _at_ a clock edge.  Inputs to
+  an action are values on wires just before the clock edge.  The
+  action may change the state of various entities, which are visible
+  just after the clock edge.
+
+For our example,
+
+* Imagine `$display` hardware modules with displays that that flash a
+    message when their `ENA` (_enable_) input signal is asserted.
+
+* Imagine a `$finish` hardware module that switches off the system
+    when its `ENA` (_enable_) input signal is asserted.
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Let's do it! Verilog compile, link and simulate
+===== Compile (generate Verilog) ...
+
+[source]
+----
+$ make v_compile 
+mkdir  -p build_v
+mkdir  -p verilog_RTL
+Compiling for Verilog ...
+bsc -u -verilog -vdir verilog_RTL -bdir build_v -info-dir build_v -keep-fires  -aggressive-conditions  -no-warn-action-shadowing  -check-assert  -cpp +RTS -K128M -RTS  -show-range-conflict      -p src:../Resources:+ -g mkTop  src/Top.bs
+checking package dependencies
+compiling src/Top.bs
+code generation for mkTop starts
+Verilog file created: verilog_RTL/mkTop.v
+All packages are up to date.
+Compiling for Verilog finished
+----
+
+* `-verilog` instructs `bsc` to generate Verilog, instead of compiling for Bluesim.
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+===== ... link (Verilog, into an executable) ...
+
+[source]
+----
+$ make v_link
+Linking for Verilog sim ...
+bsc -e mkTop -verilog -o ./mkTop_v_sim -vdir verilog_RTL -bdir build_v -info-dir build_v -vsim iverilog  verilog_RTL/mkTop.v
+Verilog binary file created: ./mkTop_v_sim
+Linking for Verilog sim finished
+----
+
+* `-vsim iverilog` instructs `bsc` to link for the IVerilog simulator.
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+===== ... simulate (Verilog) ...
+
+[source]
+----
+$ make v_sim
+Verilog simulation...
+./mkTop_v_sim
+
+
+***** Deep Thought says: Hello, World! *****
+      And the answer is: 42 (or, in hex: 0x2a)
+
+Verilog simulation finished
+----
+
+
+// ================================================================
+// SLIDE
+'''
+=== Stepping back for some perspective: Haskell (or PLs in general) vs. BH/BSV
+
+.Haskell vs. Bluespec BH/BSV
+[#Haskell_vs_Bluespec]
+image::./Figures/Haskell_vs_Bluespec.png[align="center"]
+
+To become a proficient Haskell programmer, in particular to write
+_efficient_ programs, you have to understand its dynamic model (to
+varions levels of abstraction).
+
+Similarly, to become a proficient BH/BSV programmer, in particular to
+produce _efficient_ hardware, you have to understand its dynamic
+model (to various levels of abstraction).
+
+This difference in dynamic models is the biggest jump in reorienting
+yourself into a designer of good hardware.
+
+// ================================================================
+// SLIDE
+'''
+=== Hello World! Version (b): Packages and Modules
+
+Please visit this directory
+[source]
+----
+$ cd Examples/Eg020b_HelloWorld
+----
+
+And bring up the files `src/Top.bs` and `src/DeepThought.bs` in an
+editor, preferably in a separate editor window.
+
+// ================================================================
+// SLIDE
+'''
+==== Interfaces and interface types
+
+In the `DeepThought.bs` we see this module type declaration:
+
+[source]
+----
+mkDeepThought :: Module  DeepThought_IFC
+----
+
+This says the module's _interface_ has the type `DeepThought_IFC`.  An
+interface of a module defines the _methods_ by which the environment
+interacts with the module (similar to an object interface in an
+object-oriented programming language).
+
+NOTE: In the first version of this Hello World example, the interface
+  type was the predefined type `Empty`, which is an interface with no
+  methods.  This is typically used in top-level modules.
+
+This particular interface is defined a few lines earlier:
+
+[source]
+----
+interface DeepThought_IFC =
+    getAnswer :: ActionValue  (Int 32)
+----
+
+It has a single method, `getAnswer` whose type is the monadic type
+`ActionValue (Int 32)` it is an Action that, when performed, returns a
+value of type `Int 32` (which is the type of 32-bit signed integers).
+
+Returning to the module value definition:
+
+[source]
+----
+mkDeepThought =
+  module
+    interface DeepThought_IFC
+        getAnswer = return 42
+----
+
+we see the implementation of the `getAnswer` method: it is simply the
+monadic expression `return 42`.
+
+// ================================================================
+// SLIDE
+'''
+==== Synthesis boundaries
+
+Just preceding the module definition we have the following `bsc` compiler directive:
+
+[source]
+----
+{-# verilog mkDeepThought #-}
+----
+
+Both the source code (BH/BSV) and `bsc` 's target code (Verilog) have
+the concept of "`modules`" and "`module hierarchy`", and they are in
+fact congruent, i.e., each of them has the same concept of module
+instantiations and module hierarchy (about which we'll see more in a
+moment).  The above directive instructs `bsc` please to _preserve_
+this module boundary into the generated Verilog when compiling this
+module.  Without this directive, a BH/BSV module is in-lined wherever
+it is instantiated.
+
+
+NOTE: This directive is not universally applicable to _any_ BH/BSV
+  module.  A Verilog module's interface consists of wires (individual
+  wires, or bundles of wires called _buses_), i.e., they can only
+  carry values for which we've defined a concrete hardware
+  representation in bits.  BH/BSV modules interfaces can carry
+  polymorphic values, higher-order functions etc., for which we
+  typically do not have a concrete representation in bits; such
+  modules cannot carry this directive.  Thus, the Verilog module
+  hierarchy produced from a BH/BSV program is typically a coarser
+  projection of the source hierarchy.
+
+// ================================================================
+// SLIDE
+'''
+==== Packages, imports, and files
+
+At the top of `DeepThought.bs` we have:
+
+[source]
+----
+package DeepThought where
+----
+
+and in `Top.bs` we have:
+
+[source]
+----
+import DeepThought
+----
+
+
+BH/BSV's `package` construct plays the same role `module` in Haskell.
+
+* Every file in `Foo.bs` (BH) or `Foo.bsv` (BSV) is a package, and
+    must be introduced by the `package Foo` construct
+
+    ** A file can only contain one package.
+
+* A package can _import_ a package `Foo` by saying `import Foo` (we'll
+    see that shortly in `Top.bs`).  The reason for the identity
+    between the package name and the file name is that `bsc` uses the
+    package name to search the file system for a file with that name
+    with extension `.bs` of `.bsv`.
+
+* When package `Foo` is imported, the identifiers defined there become
+    visible and usable in the importing package.
+
+    ** The vocabulary for selective export and import is not as rich
+       as in Haskell; please see <<RefGuide>> for details.
+
+* As in Haskell, if you import two packages which both define the same
+  identifier `x`, you can disambiguate them using the package name.
+
+NOTE: The `package` vs. `module` dissonance with Haskell is
+  unfortunate.  In the hardware-design universe, the word `module` has
+  long been used in Verilog and SystemVerilog with the meaning you see
+  here; we decided to keep this convention because of familiarity for
+  hardware designers (who typically have no exposure to Haskell.)
+
+// ================================================================
+// SLIDE
+'''
+==== Separate compilation
+
+Earlier, when compiling a BH program, the command we invoked had the `-u` flag:
+
+[source]
+----
+$ bsc -u -sim ...
+----
+
+This flag tells `bsc` to chase the "`import`" s transitively from the
+specified top-level file/package, and compile each such file if it is
+out-of-date, i.e., if the source has changed since the
+compiler-intermediate files were last created.  This is a bit of
+`Makefile`-like dependency-tracking built into `bsc`.
+
+NOTE: BH and BSV are completely _interoperable_ at package
+  granularity, i.e., a package written in BH can import a package
+  written in BSV and vice versa.  We will make use of this in later
+  examples when we import, from BH, code for a RISC-V CPU that happens
+  to be written in BSV.  The Bluespec standard libraries are a mix:
+  some packages are written in BH, some in BSV.
+
+
+// ================================================================
+// SLIDE
+'''
+==== Instantiating modules and invoking their methods
+
+[[ModuleInstantiation]]
+
+In `Top.bs` the module is now defined like this:
+[source]
+----
+mkTop =
+  module
+    deepThought <- mkDeepThought    -- (A)
+    rules
+        "rl_print_answer": when True ==> do
+            x <- deepThought.getAnswer
+            $display "\n\n***** Deep Thought says: Hello, World! *****"
+            $display "      And the answer is: %0d (or, in hex: 0x%0h)\n"  x  x
+            $finish
+----
+
+In line (A), we _instantiate_ the module mkDeepThought.  As the `<-`
+notation suggests, this is a monadic statement.  The right-hand-side
+is an expression of type `Module DeepThought`; the action performed is
+to instantiate the module and return it's interface, of type
+`DeepThought_IFC`.  Thus, `deepThought::DeepThought_IFC`.
+
+In the first line of the rule, the `<-` again suggests a monadic
+statement. The right-hand side is of type `ActionValue (Int 32)`; it
+performs the action and returns a value of type `Int 32`; thus `x::Int 32`.
+
+
+The two major monads used in BH/BSV are the _module_ monad and the
+_action_ monad (both of which you see in the above example):
+
+  * The module monad concerns STRUCTURE, or circuit description.  It
+    is evaluated by `bsc` to _elaborate_ a module hierarchy, starting
+    with a top-level module, elaborating the modules it instantiates,
+    elaborating the modules that those modules instantiate, and so on,
+    recursively.
+
+  * The action monad concerns BEHAVIOR--- it's action is performed
+    during circuit execution.
+
+NOTE: The module monad is actually a polymorphic `IsModule` typeclass,
+    so you can customize the module syntax to collect items other than
+    just sub-module instances, rules and interfaces.  For example, you
+    can collect `trace` output to be captured in modules deep in the
+    module hierarchcy and streamed out to be recorded somewhere.  Or
+    you could collect "`control and status`" registers from deep
+    within the module hierarchy, for dynamic configuration and
+    monitoring of a hardware design.
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Let's do it! Compile, link and simulate the example:
+
+Using Bluesim:
+[source]
+----
+$ cd  Examples/Eg020b_HelloWorld
+$ make  b_compile  b_link  b_sim
+----
+
+Using Bluesim:
+[source]
+----
+$ make  v_compile  v_link  v_sim
+----
+
+// ================================================================
+// SLIDE
+'''
+=== Hello World! Version (c): State and Time
+
+Please visit this directory
+[source]
+----
+$ cd Examples/Eg020c_HelloWorld
+----
+
+And bring up the files `src/Top.bs` and `src/DeepThought.bs` in an
+editor, preferably in a separate editor window.
+
+This version of Hello World! adds a temporal dimension.  The `mkTop`
+module will request an answer from the `mkDeepThought` module, which
+now has a _state machine_ so that it "`thinks`" for "`7.5 Million
+Years`" before yielding its answer of 42.  Meanwhile, `mkTop` waits.^1^
+
+^1^ We are of course paying homage to the book _The Hitchhiker’s Guide
+to the Galaxy_ by Douglas Adams (1979). In the book, a supercomputer
+named Deep Thought is asked to calculate the Answer to the Ultimate
+Question of Life, the Universe, and Everything. After 7.5 million
+years, it answers: "`42`".
+
+
+// ================================================================
+// SLIDE
+'''
+==== Action, ActionValue and Value interface methods
+
+In `DeepThought.bs` we see a new interface definition:
+
+[source]
+----
+interface DeepThought_IFC =
+   whatIsTheAnswer :: Action
+   getAnswer       :: ActionValue (Int 32)
+----
+
+The new method `whatIsTheAnswer` has type `Action`, which is a pure
+side-effect.  You can think of it as equivalent to `ActionValue Void`,
+i.e., the return value carries no interesting information.  `mkTop`
+will use this method to request an answer.
+
+The `getAnswer` method has the same type as before, but we will see
+that it won't yield an answer immediately (not for "`7.5 million
+years`").
+
+In general, all methods will have one of three return-types:
+
+* `Action` : a pure side effect (an action)
+
+* `ActionValue` _t_ : a side effect (an action) plus a returned value of type _t_
+
+* _t_ : a pure value with no side effect (no action)
+
+NOTE: since a rule's type is `Bool`, it is guaranteed by the type-system to have no actions/effects
+
+// ================================================================
+// SLIDE
+'''
+==== Algebraic types
+
+In `DeepThought.bs` we see a new type definition:
+
+[source]
+----
+data State_DT = IDLE | THINKING | ANSWER_READY
+     deriving (Eq, Bits, FShow)
+----
+
+* `deriving Eq` is just like Haskell, i.e., the compiler defines the
+    `Eq` typeclass operators `==` and `/=` for this new `State_DT` type.
+
+* The `Bits t n` typeclass has two functions to convert a type to bits and back.
+
++
+[source]
+----
+    pack   :: t     -> Bit n
+    unpack :: Bit n -> t
+----
+
++
+For each constructor of an algebraic type, this is canonically a
+concatenation of the bits for the component type with just enough bits
+to represent the constructor uniquely, possibly with some padding of
+"`don't care`" bits so that each disjunct has exactly the same number
+of bits.  Our example will pack into a `Bit 2` type with codings 0, 1
+and 2 for the three disjuncts.
+
+* The `FShow` typeclass is similar to `Show` in Haskell, and provides one function:
+
++
+[source]
+----
+    fshow  :: t -> Fmt
+----
+
++
+A value of `Fmt` type is a pre-formatted object that can be used as an
+argument to `$display` and `$write`.  For example,
+
++
+[source]
+----
+    $display "Current state  %0d, next state"  IDLE  (fshow THINKING)
+----
+
++
+
+will print "`Current state 0, next state THINKING`".  I.e., without
+fshow, it just prints the value of the bit reprenstation, but with
+fshow it prints the symbolic value.
+
+NOTE: Instead of `$display` which actually prints things, you can use
+`$format` which is a pure function with the same kind of arguments as
+$display, and which returns a `Fmt` object.  Further, values of `Fmt`
+type can be concatenated with `+` to create new `Fmt` values.  Thus,
+you can write functions that nicely format complex types.
+
+// ================================================================
+// SLIDE
+'''
+==== Registers: Instantiation, initializing, and operations
+
+In `DeepThought.bs`, in module `mkDeepThought` we first see the instantiation of a "`register`":
+
+[source]
+----
+    rg_state_dt      :: Reg  State_DT <- mkReg IDLE
+----
+
+This is a module instantiation, just like the one we saw earlier
+(instantiation of `mkDeepThought` in `mkTop`).
+
+NOTE: In BH/BSV, registers are not special, they are just pre-defined
+    modules that are found at the leaves of the module hierarchy.
+
+The right-hand side has type `Module (Reg State_DT)`; the monadic `<-`
+instantiates the module and returns the interface of type `Reg
+State_DT` which is bound to the identifier `rg_state_dt`.  `mkReg` has
+type:
+
+[source]
+----
+    mkReg :: t -> Module (Reg t)
+----
+
+The argument is the "`initial value`" of the register, i.e., the value
+it has when execution begins.  `Reg t` is just an interface type with two methods:
+
+[source]
+----
+    _read  :: Reg t -> t
+    _write :: Reg t -> t -> Action
+----
+
+Normally invoking a method _meth_ in interface _ifc_ is written with
+the traditional "`dot`" notation: _ifc.meth_ . Writing `._read` and
+`._write` for registers can be quite tedious, so there are some
+syntactic shorthands.  For example,
+
+[source]
+----
+    rg_half_millenia._write (rg_half_millenia._read + 1)
+----
+
+can be written with this syntactic shorthand:
+
+[source]
+----
+    rg_half_millenia := rg_half_millenia + 1
+
+----
+
+// ================================================================
+// SLIDE
+'''
+==== Local values, bit selection and combinational circuits
+
+In `DeepThought.bs`, we next see instantiation of another register
+which we use to count "`half-millenium`" steps, initialized to zero.
+It is 4 bits wide, so it can count from 0 to 15 (= 7.5 millenia).
+
+[source]
+----
+    rg_half_millenia :: Reg  (Bit 4)  <- mkReg 0
+----
+
+Next we see some local definitions:
+
+[source]
+----
+    let millenia       = rg_half_millenia [3:1]
+    let half_millenium = rg_half_millenia [0:0]
+----
+
+The notation _e_ `[3:1]` selects bits 1 through 3 of the value of _e_,
+which must have `Bit n` type, and has type `Bit 3`.  Bits are numbered
+in "`little-endian`" order, with 0 being the least-significant bit.
+
+The notation _e_ `[0:0]` can be used to select a single bit, and has type `Bit 1`.
+
+NOTE: Any pure expression (that is not an `Action` or `ActionValue`
+    type) represents a so-called "`combinational circuit`", i.e., it
+    can be compiled to an acyclic circuit of AND, OR and NOT gates.
+
+// ================================================================
+// SLIDE
+'''
+==== Interface method conditions and actions
+
+In `DeepThought.bs`, the first interface method is implemented like this:
+
+[source]
+----
+        whatIsTheAnswer = rg_state_dt := THINKING
+                          when (rg_state_dt == IDLE)
+----
+
+The second line is the "`method condition`", which states when the
+method is eligible to be invoked by the environment.  When it is
+invoked, it performs the action described in the first line (a
+register assignment).
+
+IMPORTANT: BH/BSV methods differ from methods in object-oriented
+  languages precisely because of rule conditions, which act as
+  "`guards`" on the methods.  As we shall soon see, every method is
+  invoked by a rule (either directly, or indirectly via other
+  methods); rules are the fundamental "`processes`" of BH/BSV.  When a
+  method condition is false, it has the effect of "`stalling the
+  process`", i.e., the rule from which it is invoked cannot fire.
+
+// ================================================================
+// SLIDE
+'''
+==== Rule conditions
+
+In `DeepThought.bs`, the module still has only one rule, called
+`rl_think`.  It has a non-constant _rule condition_
+
+[source]
+----
+    (rg_state_dt == THINKING)
+----
+
+which limits when the rule is allowed to fire.  It cannot fire when
+execution begins, since `rg_state_dt` is initialized to `IDLE`.
+However, when method `whatIsTheAnswer` is invoked, the method sets the
+state to `THINKING`, which enables the rule condition and allows it to
+fire.
+
+When the rule does fire, it issues message:
+
+[source]
+----
+        $write  "        DeepThought: ... thinking ... (%0d"  millenia
+        if (half_millenium == 1) then $write  ".5" else noAction
+        $display  " million years)"
+----
+
+The only difference between `$write` and `$display` is that the former
+does not emit an end-of-line while the latter does (these are
+long-standing in Verilog).
+
+This conditional expression (both arms are of type Action) either
+increments our counter or changes the state to `ANSWER_READY`:
+
+[source]
+----
+        if (rg_half_millenia == 15) then
+            rg_state_dt := ANSWER_READY
+         else
+            rg_half_millenia := rg_half_millenia + 1
+----
+
+Thus, the rule will fire repeatedly, each time incrementing
+`rg_half_millenia`, until it finally assigns `ANSWER_READY` to
+`rg_state_dt`.  At this point the rule condition is false and so it
+cannot fire any more.
+
+// ================================================================
+// SLIDE
+'''
+
+At this point, the method condition of the second method is enabled:
+
+[source]
+----
+        getAnswer = do
+                        rg_state_dt      := IDLE
+                        rg_half_millenia := 0
+                        return 42
+                    when (rg_state_dt == ANSWER_READY)
+----
+
+When the environment invokes this method, it performs its actions,
+namely restoring the registers to their initial values, and it returns
+the value 42.
+
+// ================================================================
+// SLIDE
+'''
+
+Turning to `Top.bs`, we see that it has two rules, the latter being
+the same as in the previous version:
+
+[source]
+----
+      "rule rl_ask": when True ==> do
+        $display  "Asking the Ultimate Question of Life, The Universe and Everything"
+        deepThought.whatIsTheAnswer
+
+      "rl_print_answer": when True ==> do
+        x <- deepThought.getAnswer
+        $display  "Deep Thought says: Hello, World! The answer is %0d."  x
+        $finish
+----
+
+Let us follow the "`flow`" through the program execution.  The program
+has a total of three rules, two in `mkTop` and one in `mkDeepThought`.
+
+* At start of execution, only one rule can fire:
+
+    ** `rl_ask` can fire, because its own rule condition is true and
+      the conditions on the method it invokes,
+      `deepThought.whatIsTheAnswer`, is true.
+
+    ** `rl_print_answer` cannot fire because even though the rule
+       condition is true the method condition on `deepThought.getAnswer` is not.
+    ** `rl_think` cannot fire because its rule condition is false.
+
+* `rl_ask` fires, and invokes the `deepThought.whatIsTheAnswer` method. + 
+At this point,  again, only one rule can fire:
+
+    ** `rl_think` can fire because its rule condition is true.
+    ** The other two rules cannot because the method conditions of their methods invoked are false.
+
+* `rl_think` fires, and it increments the counter.  This repeats 15 times until, again, only one rule can fire:
+
+    ** `rl_ask` cannot fire (method condition false)
+    ** `rl_think` cannot fire (rule condition false)
+    ** `rl_print_answer` can fire (rule condition and method condtion true)
+
+* `rl_print_answer` fires, prints the answer, and the execution terminates.
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Let's do it! Compile, link and simulate the example:
+
+Using Bluesim or Verilog sim:
+[source]
+----
+$ ./mkTop_b_sim
+Asking the Ultimate Question of Life, The Universe and Everything
+        DeepThought: ... thinking ... (0 million years)
+        DeepThought: ... thinking ... (0.5 million years)
+        DeepThought: ... thinking ... (1 million years)
+        DeepThought: ... thinking ... (1.5 million years)
+        DeepThought: ... thinking ... (2 million years)
+        DeepThought: ... thinking ... (2.5 million years)
+        DeepThought: ... thinking ... (3 million years)
+        DeepThought: ... thinking ... (3.5 million years)
+        DeepThought: ... thinking ... (4 million years)
+        DeepThought: ... thinking ... (4.5 million years)
+        DeepThought: ... thinking ... (5 million years)
+        DeepThought: ... thinking ... (5.5 million years)
+        DeepThought: ... thinking ... (6 million years)
+        DeepThought: ... thinking ... (6.5 million years)
+        DeepThought: ... thinking ... (7 million years)
+        DeepThought: ... thinking ... (7.5 million years)
+Deep Thought says: Hello, World! The answer is 42.
+----
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Visualizing the hardware for `mkTop`: rule-level view
+
+We continue to reinforce, as in Fig.<<Haskell_vs_Bluespec>>, that we
+are describing _actual hardware_, not some representation in memory
+manipulated by a program on a conventional computer.
+
+.A visualization of the hardware for `mkTop`: rule level
+[#Hello_World_C_mkTop_0]
+image::./Figures/Hello_World_C_mkTop_0.png[align="center", width=600]
+
+In the figure, we show module instances as sharp-cornered rectangles
+in blue, and rules and methods as rounded-cornered rectancles in
+yellow.
+
+IMPORTANT: Our choice of yellow round-cornered rectangles for
+  depicting rules and methods is deliberate.  Both have Bool
+  _conditions_ and _bodies_.  Conceptually, the overall condition
+  determining whether a rule fires is both its own condition as well
+  as the condtions on the emthods it invokes.  The overall body of a
+  rule is both its own body as well as the bodies of the methods it
+  invokes.  You can think of the source code as a way to _compose_ a
+  logical composite rule from components: a syntactic rule in a module
+  plus, the methods it invokes in other modules, and transitively, the
+  methods that those methods may invoke, etc.
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Visualizing the hardware for `mkTop`: Verilog RTL view
+
+.A visualization of the hardware for `mkTop`: Verilog RTL level
+[#Hello_World_C_mkTop_1]
+image::./Figures/Hello_World_C_mkTop_1.png[align="center", width=600]
+
+* The `RDY` signals of the methods are the method conditions
+
+* Each rule combines the `RDY` signal with its own rule condition,
+  resulting finally in a `WILL_FIRE` signal indicating when the rule
+  will fire.
+
+* The `WILL_FIRE` signal of a rule activates all teh `ENA` signals of
+  Action and ActionValue methods that it invokes.
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Visualizing the hardware for `mkDeepThought`: rule-level view
+
+.A visualization of the hardware for `mkTop`: rule level
+[#Hello_World_C_mkDeepThought_0]
+image::./Figures/Hello_World_C_mkDeepThought_0.png[align="center", width=800]
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Visualizing the hardware for `mkDeepThought`: Verilog RTL view
+
+.A visualization of the hardware for `mkDeepThought`: Verilog RTL level
+[#Hello_World_C_mkDeepThought_1]
+image::./Figures/Hello_World_C_mkDeepThought_1.png[align="center", width=800]
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Waveforms: VCD files and Waveform viewers
+
+Now let's run the Bluesim simulation with the `-V` flag, or the IVerilog
+simulation using the `+bscvcd` flag:
+
+[source]
+----
+$ ./mkTop_b_sim  -V
+$ ./mkTop_v_sim  +bscvcd
+----
+
+In each case, it will produce a file called `dump.vcd`.  VCD stands
+for "`Value Change Dump`", a standard feature of hardware simulations;
+it is essentially a dump of all 0->1 and 1->0 transitions in the
+circuit, and thus represents a detailed "`time trace`" of hardware
+behavior.
+
+If you have installed the `GtkWave` application (free, open source,
+available standardly with most package installers, such as `apt-get
+install gtkwave` on Linux), you can view the VCD file:
+
+[source]
+----
+$ gtkwave  dump.vcd
+----
+
+The GUI has various controls to select which waves and what time range
+you want to see.  Here is a snapshot:
+
+.Waveforms from Hello World!
+[#Hello_World_C_Waves]
+image::./Figures/Hello_World_C_Waves.png[align="center"]
+
+The top-left window shows the module hierarchy.  The figure shows
+`deepThought` inside `top` (which, in turn, is inside a boilerplate
+`main` provided by the `bsc` libraries).  When you click on a module
+instance, the window below it shows the signals in that
+module. Selecting a signal and clicking `Append` brings up the signal
+in the main signal window.  We have selected a few signals of interest
+for this example.
+
+The top waveform is the clock signal `CLK`.
+
+The next two waves show the method condition of `whatIsTheAnswer`
+(`CAN_FIRE_...`) and overall condition of the `rl_ask` rule
+(`WILL_FIRE_...`).  You can see that they are enabled (true) on the
+first clock, and false subsequently.
+
+The next two waves show the value of the `rg_state_dt` and
+`rg_half_millenia` registers.  The from starts at 0 (encoding of
+`IDLE`), moves to 1 (`THNKING`) and finally to 2 (`ANSWER_READY`).
+The latter starts at 0 and increments up to 15 (hex 0xF).
+
+The final two waves show the method condition for `getAnswer` and the
+overall rule condition for `rl_print_answer`).  These are false until
+`rg_state_dt` becomes `ANSWER_READY`,
+
+// ================================================================
+// SLIDE
+'''
+=== Simulation and Synthesis semantics are the same in BH/BSV
+
+* You should see exactly the same waveforms whether you use Bluesim,
+IVerilog simulation, or any other Verilog simulator.
+
+* In traditional Hardware Design Languages (HDLs) like Verilog,
+SystemVerilog and VHDL, there can be a difference between what you see
+in simulation (VCD viewing) and what you see in real hardware (hooking
+up an oscilloscope to the actual electronic circuit).  This is because
+these languages are defined based on a _simulation_ model which is
+more expressive than actual hardware (you can specify arbitrary time
+intervals within clocks, signals can be sampled at arbitrary time
+points within clocks, etc.).
+
++
+
+To eliminate nasty surprises, one is advised to stick to the so-called
+"`synthesizable`" subset of Verilog/ SystemVerilog/ VHDL, which avoids
+those tricky constructs.
+
++
+In BH/BSV there is no such difference between simulation and hardware
+semantics.
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+[#HDLS_vs_HLS]
+=== HLHDLs vs. HLS: precise specification of micro-architecture
+
+* Please observe, in the above diagrams, that the Rule-level view and
+  the Verilog RTL view have the same broad structure, differing only
+  in the level of detail.
+
+* This is why it is not hard to correlate Verilog simulation and VCD
+  waves produced by Verilog simulation to BH/BSV source code.
+
+* This is _quite different_ from the situation with so-called HLS
+  (High Level Synthesis).  In HLS, the source code is C/C++ (with the
+  execution semantics of C/C++), and the HLS tool produces a
+  microarchitecture for you (modules, logic, connections).  The
+  designer can provide directives that influence the
+  microarchitecture, but does not specify the microarchitecture
+  precisely.
+
+* In HLHDLs like BH/BSV and Chisel, you specify the microarchitecture
+  precisely.
+
+// ================================================================
+// SLIDE
+'''
+=== Numeric types and kinds in BH/BSV
+
+In the previous examples, we saw types such as `Int 32` and `Bit 4`,
+for 32-bit signed integers and 4-bit-wide bit vectors.  In BH/BSV,
+there are several _kinds_ of types.  Most types we use, such as
+scalars, vectors, functions, and so on are of the ordinary kind
+(notated `*` in code).
+
+Another kind is the numeric kind (notated `#` in code), as in the
+above examples.  Though they look like numeric values, they only live
+in type expressions, and should not be confused with numeric values.
+
+Only fixed-width types are supported in hardware.  BH/BSV has an
+unbounded `Integer` type, but they can only be used for static
+elaboration, i.e., structural description, not for values represented
+in hardware.
+
+Arithmetic on fixed-width types wraps around silently, as it does in
+hardware, so you need to be careful about this.
+
+BH/BSV has strong type-checking on numeric types, and there are no
+automatic coercions to silently extend or truncate types to different
+widths.  Thus, if a context expects a `Bit 4` and the expression there
+has type `Bit 5`, the compiler will report it as a type error.  You
+have to explicitly use the primitive functions `zeroExtend` and
+`signExtend` and `truncate` if you wish to convert the width of a
+value.
+
+NOTE: In software we are used to thinking of a few, fixed,
+byte-multiple sizes for integers, typically from 1 to 4 bytes, because
+that's what our underlying processors and memories use.  In hardware
+design, there is nothing special about byte-multiples, bytes, 64-bit
+width limits, etc.; one typically picks exactly the bit-width needed
+for purpose.  In such a scenario, we are skating much closer to the
+edge concerning wraparounds, overflows etc., so one needs to be much
+more careful about this.  BH/BSV's strong type-checking on numeric
+types are a great benefit for this.
+
+
+Functions and types can be polymorphic on numeric types, and BH/BSV
+also has typeclasses on numeric types that encode limited arithmetic
+on such types.  Thus, for example, we can express (and typecheck) a
+function that concatenates values of type `Bit m` and `Bit n` to
+produce a value of type `Bit n+m`.  Here, `n` and `m` are type
+variables of numeric kind.
+
+// ****************************************************************
+// ****************************************************************
+// Section; SLIDE
+'''
+== Introducing Concurrency with Bubblesort as Example
+
+Everyone who's learned programming is familiar with Bubblesort.  It's
+a very inefficient sorting algorithm, but is useful as a pedagogical
+tool to learn some basic programming constructs.  Here, we'll use it
+as a vehicle to introduce concurrency in BH/BSV.
+
+We'll start with a traditional sequential version, then add
+concurrency, and then generalize the code in various ways
+(polymorphism and type-dependent ordering, size of array, etc.).
+
+// ================================================================
+'''
+=== Bubblesort Version (a): Sequential (a finite state machine)
+
+Please visit this directory:
+
+[source]
+----
+$ cd  Examples/Eg030a_Bubblesort
+----
+
+and examine the source files in an editor:
+
+[source]
+----
+src/Top.bs
+src/Bubblesort.bs
+----
+
+The overall strategy (very artificial!) is the following:
+
+* In the top-level module `mkTop` (in `Top.bs`), we will generate
+  (sequentially) five random values of type `Int 32` and feed them
+  (sequentially) into the `mkBubbleSort` module (in `Bubblesort.bs`).
+
+* `mkBubblesort` will then sort the numbers and indicate completion
+
+* `mkTop` will then drain the values (sequentially) in sorted order,
+  and print the results.
+
+// ================================================================
+'''
+==== `mkBubblesort`: interface
+
+We start by defining its interface:
+
+[source]
+----
+interface Sort_IFC =
+    put :: (Int 32) -> Action
+    get :: ActionValue  (Int 32)
+----
+
+* The `put` method will be invoked repeatedly by `mkTop`, supplying an `Int 32`
+    argument each time, to load the sorter.
+
+* Finally, the `get` method will be invoked repeatedly by `mkTop`,
+  each time extracting an `Int 32` value, in sorted order.
+
+// ================================================================
+'''
+==== `mkBubblesort`: state elements
+
+In the `mkBubblesort` module, we instantiate a number of registers to
+hold the "`state`" of the module.
+
+This register will be used to count-in and count-out inputs, so we
+know when we've received the correct number for inputs and have
+delivered the correct number of outputs.  The register contents has
+type `UInt 3` (unsigned 3-bit integer) which is adequate for our
+purpose (or we could have used `Bit 3` directly here):
+
+[source]
+----
+        rg_j :: Reg (UInt  3) <- mkReg  0
+----
+
+NOTE: The intitial value must have the register-content type `UInt 3`;
+  so what is the type of `0`?  It's actually of type `Integer`
+  (unbounded integers), but BH/BSV plays the same Haskell trick of
+  applying `fromInteger` implicitly to integer literals, and typeclass
+  machinery will produce the required `UInt 3`.
+
+Next, because we're going to imitate the classical sequential program,
+we're going to use a "`Program Counter`" to sequence it through the steps:
+
+[source]
+----
+        rg_pc :: Reg  (Bit  3) <- mkReg  0
+----
+
+This register will remember, in each sweep through the array, whether
+or not any swaps were performed, in order to detect termination (no
+swaps => all sorted):
+
+[source]
+----
+        rg_swapped :: Reg  Bool <- mkRegU
+----
+
+Finally, the registers holding the values to be sorted.^1^ We don't
+bother initializing them since we'll be loading them before sorting.
+
+[source]
+----
+        x0 :: Reg  (Int  32) <- mkRegU
+        x1 :: Reg  (Int  32) <- mkRegU
+        x2 :: Reg  (Int  32) <- mkRegU
+        x3 :: Reg  (Int  32) <- mkRegU
+        x4 :: Reg  (Int  32) <- mkRegU
+----
+
+^1^ _If you are squirming at this tedious repetition: don't worry, we'll use a vector, soon._
+
+// ================================================================
+'''
+==== `mkBubblesort`: input
+
+As `mkTop` repeatedly calls the `put` method to deliver input values,
+we'll "`shift them in`" to the holding registers.  This help-function
+expresses the idea:
+
+[source]
+----
+        let shift :: Int 32 -> Action
+            shift y = action { x0 := x1; x1 := x2; x2 := x3; x3 := x4; x4 := y }
+----
+
+Note, these are five _simultaneous_ actions; there is no semantic
+sequencing between them.  Think of them as five parallel assignments.
+
+Here is the `put` method that delivers input values:
+
+[source]
+----
+            put x = do
+                        shift  x
+                        rg_j := rg_j + 1
+                        if1 (rg_j == 4)
+                            action { rg_pc := 1; rg_swapped := False }
+                    when (rg_pc == 0)
+----
+
+It is only enabled when `rg_pc` is 0 (we'll use non-zero as an
+indication of "`busy`").  It shifts the new value `x` in and
+increments `rg_j`. On the last value (`rg_j==4`), we set `rg_pc` to 1
+and initialize `rg_swapped` to False.
+
+
+// ================================================================
+'''
+==== `mkBubblesort`: sorting
+
+The sorting behavior is expressed by a series of 5 rules:
+
+[source]
+----
+            "rl_swap_0_1": when (rg_pc == 1)
+             ==> do
+                    if1 (x0 > x1)
+                        action { x0 := x1; x1 := x0; rg_swapped := True }
+                    rg_pc := 2
+
+            "rl_swap_1_2": when (rg_pc == 2)
+             ==> do
+                    if1 (x1 > x2)
+                        action { x1 := x2; x2 := x1; rg_swapped := True }
+                    rg_pc := 3
+
+            ...
+----
+
+Each rule's condition only enables it to fire when `rg_pc` has a
+particular value.  It swaps an adjacent pair of registers if they are
+in the wrong order, and advances `rg_pc` to enable the next rule.
+
+Note: in a traditional imperative language, a swap usually needs an
+extra temporary variable because assignment statements are sequential:
+
+[source]
+----
+tmp := x1
+x1  := x0
+x0  := tmp
+----
+
+In BH/BSV, the actions in an Action block are all _simultaneous_
+(parallel assignments), so there is no need for an intermediate
+temporary variable.
+
+// ================================================================
+'''
+==== `mkBubblesort`: termination
+
+If any `rl_swap` actually performs a swap, it will have set
+`rg_swapped` true.  We use this in the final rule to decide whether to
+loop or signal completion (by setting `rg_pc` to 6:
+
+[source]
+----
+            "rl_loop_or_exit": when (rg_pc == 5)
+             ==> do
+                    if (rg_swapped) then
+                        action { rg_swapped := False; rg_pc := 1 }
+                     else
+                        rg_pc := 6
+----
+
+// ================================================================
+'''
+==== `mkBubblesort`: output
+
+Output is delivered with repeated invocations of the `get` method.
+This is only enabled when `rg_pc` is 6 and there are > 0 elements
+remaining in the register array (`rg_j /= 0`).  It returns `x0` (the
+smallest of the remaining sorted values), but its actions also shift
+the array, decrement `rg_j`, and, on the last value, resets `rg_pc` to
+0 getting the module ready for its next use.
+
+[source]
+----
+            get   = do
+                        shift  _
+                        rg_j := rg_j - 1
+                        if1 (rg_j == 1) (rg_pc := 0)
+                        return x0
+                    when ((rg_j /= 0) && (rg_pc == 6))
+----
+
+
+// ================================================================
+'''
+==== `mkTop`, the driver "`testbench`" (in file `Top.bs`)
+
+We import a standard BH/BSV library that implements a module
+generating pseudo-random numbers (linear feedback shift register):
+
+[source]
+----
+import LFSR
+----
+
+whose interface looks like this:
+
+[source]
+----
+    Bits t n => interface LFSR t
+      value :: t
+      next  :: Action
+----
+
+It can be used on any type `t` that has a `Bit n` representation.  The
+`value` method yields the next random value, and the `next` method
+advances it to generate the next random value.
+
+We instantiate two registers to count-off the input and output
+sequences, instantiate the random-number generator (which, here
+generates values of type `Bit 8`, and instantiate the Bubblesort
+module:
+
+[source]
+----
+        rg_j1 :: Reg (Int  32) <- mkReg  0
+        rg_j2 :: Reg (Int  32) <- mkReg  0
+        lfsr :: LFSR (Bit  8) <- mkLFSR_8
+        sorter :: Sort_IFC <- mkBubblesort
+----
+
+This rule feeds inputs.  It has an explicit condition, but also it can
+only fire when `sorter.put` is enabled.  The `zeroExtend` typeclassed
+function extends `Bit 8` to `Bit 32`.  The `unpack` function (in the
+`Bits` typeclass) converts `Bit 32` to `UInt 32`.
+
+[source]
+----
+          "rl_feed_inputs": when (rg_j1 < n)
+            ==> do
+                    let v :: Bit 32 = zeroExtend  lfsr.value
+                    lfsr.next
+                    let x :: Int 32 = unpack  v
+                    sorter.put  x
+                    rg_j1 := rg_j1 + 1
+                    $display  "%0d: x_%0d = %0d"  cur_cycle  rg_j1  x
+----
+
+
+This rule drains and prints outputs.  It has an explicit condition,
+but also it can only fire when `sorter.get` is enabled.
+
+[source]
+----
+          "rl_drain_outputs": when (rg_j2 < n)
+            ==> do
+                    y <- sorter.get
+                    rg_j2 := rg_j2 + 1
+                    $display "                   %0d: y_%0d = %0d"  cur_cycle  rg_j2  y
+                    if1  (rg_j2 == n-1)  $finish
+----
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Let's do it! Compile, link and simulate the example
+
+Use Bluesim or Verilog sim, and generate a VCD waveform file:
+
+[source]
+----
+$ make b_compile b_link b_sim_vcd
+...
+Bluesim simulation ...
+./mkTop_b_sim
+1: x_0 = 1
+2: x_1 = 142
+3: x_2 = 71
+4: x_3 = 173
+5: x_4 = 216
+                                16: y_0 = 1
+                                17: y_1 = 71
+                                18: y_2 = 142
+                                19: y_3 = 173
+                                20: y_4 = 216
+Bluesim simulation and dumping VCD in dump.vcd finished
+----
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Waveforms (`$ gtkwave  dump.vcd`)
+
+.Waveforms from sequential Bubblesort
+[#Bubblesort_A_Waves]
+image::./Figures/Bubblesort_A_Waves.png[align="center"]
+
+
+// ================================================================
+'''
+=== Bubblesort Version (b): with concurrency
+
+Please visit this directory:
+
+[source]
+----
+$ cd  Examples/Eg030b_Bubblesort
+----
+
+and examine the source file `src/Bubblesort.bs` (the
+top-level file `src/Top.bs` is identical to the previous version, we're
+only changing the internal implementation of Bubblesort).
+
+New strategy: the module will perform swaps concurrently.  In
+fact, it can start swaps as inputs are being streamed in.
+
+.Behavior in concurrent Bubblesort
+[#Bubblesort_B_overview]
+image::./Figures/Bubblesort_B_overview.png[align="center", width=400]
+
+
+// ================================================================
+'''
+==== Bubblesort with concurrency
+
+The interface to `mkBubblesort` remains unchanged.  In the module, we
+now provide an initial value for our data registers:
+
+[source]
+----
+    x0 :: Reg  (Int  32) <- mkReg  maxBound
+----
+
+As in Haskell, `maxBound` is resolved using typeclasses to be the
+maximum ordered value in the `Int 32` type.  We use `maxBound` as a
+"`sentinel`" value, and assume no actual input to be sorted has that
+value (we'll fix this limitation in a later version).
+
+This expression continually tests whether the array is full and is sorted:^1^
+[source]
+----
+    let done :: Bool
+        done = ((rg_inj == 5) && (x0 <= x1) && (x1 <= x2) && (x2 <= x3) && (x3 <= x4))
+----
+
+What do we mean by "`continually`"?  Remember that any pure value
+expression in BH/BSV represents a combinational circuit, an acyclic
+circuit of AND/OR/NOT gates, and is a pure function its inputs.  Here,
+each `\<=` is a _comparator_ circuit (a combinational circuit defined
+in terms of AND/OR/NOT) whose inputs are connected to the bits in the
+various registers or fixed at a constant value and with a single
+output wire carrying the comparison result.  We AND all these together
+to drive a single wire called `done`.  This wire continually carries
+the value of this computation based on the current values in the
+registers.  This picture shows the hardware:
+
+.Hardware for `done`
+[#Bubblesort_B_done]
+image::./Figures/Bubblesort_B_done.png[align="center", width=400]
+
+^1^ _If you are squirming at this tedious repetition: don't worry, we'll use a `fold` soon._
+
+// ================================================================
+'''
+==== Swapping
+
+Our swap rules are no longer sequenced by any program counter. Here are the first two rules:
+
+[source]
+----
+        "rl_swap_0_1": when  (x0 > x1) ==> do
+            x0 := x1
+            x1 := x0
+
+        "rl_swap_1_2": when  (x1 > x2) ==> do
+            x1 := x2
+            x2 := x1
+----
+
+Each rule swaps its two registers whenever they're mis-ordered.
+
+.Hardware for a `swap` rule, seen in isolation
+[#Bubblesort_B_swap]
+image::./Figures/Bubblesort_B_swap.png[align="center", width=150]
+
+
+// ================================================================
+'''
+==== Swapping and concurrency
+
+This brings up a very important point: what if both rules are enabled?
+I.e., what if `x0` and `x1` are in the wrong order, and `x1` and `x2`
+are also in the wrong order?  Then, they'll both try to read and write
+the register they share, `x1`.  Do we have a race condition?
+
+In BH/BSV semantics, rules are _atomic_ by definition, so we don't
+have to worry about race conditions. It's up to the implementation to
+guarantee that they execute in some _logical_ order (logically either
+`rl_swap_0_1` before `rl_swap_1_2` or the other way around).  `bsc`
+will produce hardware that guarantees this.
+
+The figure shows additional detail for the hardware for a swapping
+rule.
+
+.Hardware for a `swap` rule, seen more detail
+[#Bubblesort_B_swap_detail]
+image::./Figures/Bubblesort_B_swap_detail.png[align="center", width=500]
+
+First, each register input has a _multiplexer_ (which is basically an
+if- or case- expression) to choose one of many possible inputs
+(remember that register `x1` is updated in both rules `rl_swap_0_1`
+and in rule `rl_swap_1_2`).
+
+Second, a `Control` block (also a combinational circuit) takes the
+basic rule condition (`CAN_FIRE`) but also combines it with the
+`CAN_FIRE` conditions of other rules to further ensure that firing
+this rule will not violate atomicity (`WILL_FIRE`).  The `WILL_FIRE`
+signal of a rule or method essentially drives "`enable`" signals
+(`EN`, `ENA`) of state elements to control whether or not their state
+is updated.
+
+NOTE: Though we may leave atomicity of rules to the `bsc` compiler, we
+may still be curious (and in some cases worried, due to considerations
+of fairness, starvation, deadlock etc.) about what logical order is
+chosen by the compiler.  There are ways to control this, illustrated
+in the source file later under `ifdef OPTION2`, `OPTION3` and
+`OPTION4`.  Please feel free to study that code later.
+
+// ================================================================
+'''
+==== Input
+
+The `put` method for input now just records the new input in register
+`x4`, and does not do any shifting.  Its rule condition checks that
+`x4` is "`empty`" (contains `maxBound`); this prevents `put` from
+overwriting this value by the next value.
+
+[source]
+----
+        put x = do
+                    x4 := x
+                    rg_inj := rg_inj + 1
+                when ((rg_inj < 5) && (x4 == maxBound))
+----
+
+.Hardware for `put` method, seen in isolation
+[#Bubblesort_B_put]
+image::./Figures/Bubblesort_B_put.png[align="center", width=500]
+
+As soon as we've registered the first input, `x3` and `x4` will be
+mis-ordered because `x3` contains `maxBound`, so rule `rl_swap_3_4`
+will be enabled to swap it
+
+Swapping can begin immediately the first input arrives, and can
+continue as more inputs arrive.
+
+// ================================================================
+'''
+==== Output
+
+The `get` method for output returns `x0` and shifts as before, except
+here we shift in `maxBound` to prepare the module for its the next
+use.  On the last output (when `x1 == maxBound`) we restore `rg_inj`
+to 0, making the module ready for its next use (enabling `get` again).
+
+[source]
+----
+        get = do
+                x0 := x1
+                x1 := x2
+                x2 := x3
+                x3 := x4
+                x4 := maxBound
+                if1 (x1 == maxBound) (rg_inj := 0)
+                return x0
+              when  done
+----
+
+.Hardware for `get` method, seen in isolation
+[#Bubblesort_B_get]
+image::./Figures/Bubblesort_B_get.png[align="center", width=500]
+
+// ----------------------------------------------------------------
+// SLIDE
+'''
+==== Let's do it! Compile, link and simulate the example, and look at waves
+
+Use Bluesim or Verilog sim, and generate a VCD waveform file (text
+output the same as Version (a)).
+
+.Waveforms from concurrent Bubblesort
+[#Bubblesort_B_Waves]
+image::./Figures/Bubblesort_B_Waves.png[align="center"]
+
+Compare this with the waveform for the sequential version in
+<<Bubblesort_A_Waves>>.  Here, the `WILL_FIRE` signals show swap rules
+firing concurrently, and firing even before all inputs have arrived.
+The whole computation finishes in fewer cycles (see `CLK`).
+
+// ================================================================
+'''
+=== Bubblesort Versions (c), (d) and (e): generalizations
+
+There are three more example directories in the Bubblesort group.
+These are mostly an exposition of using standard Haskell-ry (types,
+higher-order functions, lists) for more expressivity in the hardware
+description.  They should be easy to follow by anyone who knows
+Haskell.  We leave that as an exercise for the reader, but in the next
+section we briefly discuss a few highlights of the final version.
+
+Version (c):: Generalize from sorting 5 values to sorting _n_ values,
+    using a vector of _n_ registers instead of explicitly listing out
+    all the registers.
+
+Version (d):: Generalize from sorting values of `Int 32` to values of any type
+    `t` that can be represented in bits and on which we can define an
+    ordering.
+
+Version (e):: Use a `Maybe` type for register contents so that properly identify
+    "`empty`" registers instead encoding it using `maxBound`.
+
+IMPORTANT: We remind the reader that all the Haskell-ry in BH/BSV is
+concerned only with STRUCTURE, i.e., describing the moudule heirarchy,
+rules, how they connect with methods, etc.  In other words, circuit
+structure description.  The BEHAVIOR of the circuit (how its state and
+signals evolve over time) is given by rule semantics, which has nothing
+to do with Haskell per se.
+
+NOTE: These examples use _n_ registers to hold the values being
+sorted.  This hardware is not reasonable when _n_ is large (100s,
+1000s, ... billions).  For that, one would store the data in an SRAM
+or DRAM memory module (which has dense, optimized circuitry that can
+store gigabytes, unlike separate registers).  That is the subject of
+the _mergesort_ example, later.
+
+// ================================================================
+'''
+==== Bubblesort Version (e): highlights
+
+The interface type generalizes to:
+
+[source]
+----
+(Bubblesort_IFC :: # -> * -> *)  n_t  t
+----
+i.e., it becomes a polymorphic type constructor where `n_t` is a
+numeric type representing the size of the vector of values to be
+sorted, and `t` is the type of the values to be sorted.
+
+The module type declaration now acquires some typeclass constraints:
+[source]
+----
+mkBubblesort :: (Bits  t  wt,                -- ensures 't' has a hardware bit representation
+                 Ord  t,                     -- ensures 't' has the '<=' comparison operator
+                 Eq  t)                      -- ensures 't' has the '==' comparison operator
+                 =>
+                 Module  (Bubblesort_IFC  n_t  t)
+----
+
+Numeric types can be lowered to corresponding numeric values (of type `Integer`):
+[source]
+----
+    let  n    :: Integer = valueOf  n_t
+----
+
+Instantiating a vector of registers by repeated `mkReg` instantiation using monadic `replicateM`:
+[source]
+----
+    xs :: Vector  n_t  (Reg  (Maybe  t)) <- replicateM  (mkReg  Invalid)
+----
+
+Lambdas, lists and fold-like functions over vectors for our `done` predicate:
+[source]
+----
+                   (List.all (\i -> ((xs !! i)._read <= (xs !! (i+1))._read))
+                             (List.upto  0  (n - 2)))
+----
+
+Rules as first class objects: a function to generate a swap rule:
+[source]
+----
+        gen_swap_rule :: Integer -> Rules
+        gen_swap_rule  i = let
+                               xs_i        = xs !! i
+                               xs_i_plus_1 = xs !! (i+1)
+                           in
+                               rules
+                                 "rl_swap_i": when (xs_i > xs_i_plus_1)
+----
+
+
+Rules as first class objects: adding a generated list of rules to a module's collection:
+[source]
+----
+    addRules_list_descending_urgency  (List.map  gen_swap_rule  (List.upto  0  (n - 2)))
+----
+
+
+
+
+// ================================================================
+'''
+=== An Aside on Style
+
+Our examples often use certain stylistic conventions:
+
+* `_IFC` at the end of interface names
+* `mk` at the front of module names
+* `rg_` at the front of register names
+* `rl_` at the front of rule names
+
+Later examples will also use:
+
+* `mv_`, `ma_`, `mav_`  in front of names of value, Action and ActionValue  methods, respectively
+* `fv_`, `fa_`, `fav_`  in front of names of value, Action and ActionValue  functions, respectively
+
+All these conventions are purely this author's chosen style to improve
+readability, and are not _required_ by the syntax.
+
+
+// ****************************************************************
+// ****************************************************************
+// Section; SLIDE
+'''
+== Pipelining, memory access and accelerators (example: "`Mergesort`")
+
+// ================================================================
+// Section; SLIDE
+'''
+=== Where do Accelerators Fit into a Computer System?
+
+.From tightly-coupled to loosely-coupled accelerators
+[#Fig_Accelerator_Models]
+image::Figures/Accelerator_Models.png[align="center", width=700]
+
+* How closely-coupled ("`tight`") is the accelerator to the CPU pipeline?
+
+    ** How often is the hand-off from the "`main`" computation
+       (executed by code on the CPU) to the "`accelerated`"
+       computation and back?
+
+    ** How much work is done by the accelerator for each invocation between handoffs?
+
+* How is data shared between the "`main`" computation to the "`accelerated`" computation?
+    ** Does the accelerator need to access CPU registers and/or to memory?
+    ** Is memory access shared with CPU caches?
+    ** Is such sharing cache-coherent?
+    ** Does the accelerator use virtual or physical addresses?
+    ** How is the accelerator's access to memory made secure (only permitted accesses)?
+
+// ================================================================
+// Section; SLIDE
+'''
+=== Our example: a memory-to-memory "`mergesort`" accelerator
+
+.CPU-accelerator protocol
+[#Fig_Accelerator_Flow]
+image::Figures/Accelerator_Flow.png[align="center", width=700]
+
+All transactions are memory reads or writes, through the AXI4 system
+interconnect.  System interconnects are also known as "`system buses`"
+even though for speed reasons modern system interconnects are
+typically no longer "`buses`" (a shared set of wires), but actually a
+packet-switched network.
+
+NOTE: AXI4 is an open interconnect standard defined by ARM (<<AXISpec>>).
+
+1. Prequel: the CPU prepares a vector in memory to be sorted.
+
+2. The CPU "`configures`" the accelerator by performing a series of
+  "`writes`" to the accelerator through the system interconnect.  In
+  our example, this includes:
+
+    ** The starting address of vector A of 64-bit words (input and output).
+
+    ** The starting address of the same-sized vector B (work area).
+
+    ** The size of the vectors (number of 64-bit words).
+
+    ** A "`control`" write that tells the accelerator to begin sorting,
+
+3. The accelerator performs reads and writes to memory via the system
+    interconnect, and implements the sorting algorithm.
+
+4. While the accelerator works, the CPU continually "`polls`"the
+     accelertor for an indication of completion, by doing a "`status`"
+     read.
+
+    ** Sometimes instead of polling, the accelerator may "`interrupt`"
+         the CPU to indicate completion; we will not be showing that
+         here.
+
+5. Sequel: the CPU computes with sorted vector.
+
+// ================================================================
+// SLIDE
+'''
+=== Mergesort: source codes
+
+The BH/BSV source codes for the _Flute_ CPU and the SoC
+(System-on-a-chip) into which we'll attach our accelerator should be
+cloned from GitHub:
+
+[source]
+----
+    git clone https://github.com/bluespec/Flute
+----
+
+The source code for our Mergesort example is in two files of <300 lines each:
+
+[source]
+----
+    ICFP2020_Bluespec_Tutorial/Examples/Eg040_Mergesort/src/AXI4_Accel.bs
+    ICFP2020_Bluespec_Tutorial/Examples/Eg040_Mergesort/src/Merge_Engine.bs
+----
+
+Please feel free to peruse the Flute code at your leisure.  It is
+written in BSV, not BH, but if you squint appropriately, it has the
+same underlying syntactic structure as BH.  The two major parts of the
+repo are:
+
+* `$(FLUTE)$/src_Core/`: RISC-V ISA definitions, Flute CPU, caches and
+  MMUs, PLIC (Platform Level Interrupt Controller), `Near_Mem_IO`
+  (memory mapped timer, timer-interrupt and software-interrupt
+  generator), Debug Module (for remote GDB control over a RISC-V
+  executable, and Tandem-Verification trace encoder.
+
+* `$(FLUTE)$/src_Testbench`: The SoC (including Boot ROM, memory
+  controller, UART and AXI4 interconnection fabrics) and a top-level
+  wrapper for simulation.
+
+The repo also has build directories for several variants (32-bit and
+64-bit RISC-V, with and without Virtual Memory, etc.), precompiled ISA
+tests, scripts to run everything, etc.
+
+// ================================================================
+// SLIDE
+'''
+=== Mergesort algorithm
+
+.Mergesort algorithm
+[#Mergesort_algorithm]
+image::Figures/Mergesort_algorithm.png[align="center"]
+
+* Note that each "`merge`" 's input segment is already
+  sorted, and its output segment is also sorted.
+
+* Each pass reads from an input array and writes to an output array.
+
+* Opportunities for concurrency:
+
+    1. Each "`merge`" 's memory requests cn be pipeline, i.e., the
+        path from the merge hardware to memory (requests) and back
+        (responses).  We can launch memory read-requests as fast as we
+        can generate them, consume read-responses as they arrive to
+        perform the merge, and stream the final write-requests out
+        from the merge.
+
+    2. Multiple instances of "`merge`" can be done concurrently.
+       *** The are completely independent of each other.
+
+    3. If we use multple arrays, multiple "`passes`" can be done
+         concurrently *** Provided that a pass can "`wait`" for its
+         input data that is being produced by an earlier pass. We
+         could use an "`IVar`" (I-Structure Variable) for
+         this.
+
+* In our example, we'll only use opportunity (1).
+
+    ** Opportunity (2) is usable if memory has sufficient bandwidth to
+       handle so many concurrent reads and writes.
+
+    ** Opportunity (3) will take a lot of resources (memory) for the
+       data.  It also has tricky synchronization, which "`IVars`"
+       (I-Structure variables) would neatly solve, but this adds
+       further hardware cost and complexity.
+
+* If we complete one pass before starting the next, we avoid the IVar
+       synchronization issue.  Further, we can alternate between two
+       arrays A and B for input and output.  (We may need a final copy
+       if we don't end with the data in the desired output array).
+
+// ================================================================
+// SLIDE
+'''
+=== Mergesort: visualizing the merge step
+
+.Merge step: sort two already-sorted segments of length "`span`"
+[#Mergesort_merge]
+image::Figures/Mergesort_merge.png[align="center", width = 600]
+
+* Note that each "`merge`" 's input segment is already
+  sorted, and its output segment is also sorted.
+
+* In the code, we will see registers and wires with the same names as in the figure.
+
+// ================================================================
+// SLIDE
+'''
+=== The Merge Engine (sorts two input segments into 1 output segment)
+
+Please examine the file: `Examples/Eg040_Mergesort/src/Merge_Engine.bs`.
+
+* The functions `fv_mkMemReadReq` and `fv_mkMemWriteReq` create AXI4
+  memory-request structs for the given address and data. The details
+  can be ignored here.
+
+  ** The `id` argument is a tag (0 or 1) that we attach on concurrent
+      requests for data from the left and right segments of
+      `merge_engine` inputs, so that we can disambiguate the responses
+      (since responses arrive on the same AXI4 interface).
+
+// ================================================================
+// SLIDE
+'''
+=== The Merge Engine: interface
+
+Other than an `init` interface to initialize the module, the "`work`" methods are:
+
+[source]
+----
+interface Merge_Engine_IFC =
+   init :: Action
+
+   start :: ... <args> ... -> Action
+   done  :: Bool
+
+   initiator_ifc :: AXI4_Master_IFC  Wd_Id  Wd_Addr  Wd_Data  Wd_User
+----
+
+* Each time we want to do a "`merge`" step, we invoke the `start`
+    method giving it all the information it needs about location and
+    size of its two input and one output segments. Later, `done` will
+    become true when it has finished merging the segments.
+
+* While it works, it issues memory reads and writes via
+    `initiator_ifc`.  The numeric type paramters of `AXI4_Master_IFC`
+    specify standard AXI4 parameters: bit widths of address, data, id
+    and user fields carried in AXI4 requests and responses.
+
+// ================================================================
+// SLIDE
+'''
+=== The Merge Engine: Talking to the AXI4 interconnect (bus)
+
+The <<AXISpec>> from ARM that defines the AXI4 protocol has much
+detail about wires, signalling etc.  To simplify our lives, we define
+some library components called "`transactors`" (a.k.a. adapter, or
+shim) that take care of all the signalling details and present us,
+instead, with simple FIFO enqueue/dequeue interfaces for the different
+AXI4 channels.  We instantiate such a component in `mkMerge_Engine`:
+
+[source]
+----
+    initiator_xactor :: AXI4_Master_Xactor_IFC  Wd_Id Wd_Addr Wd_Data Wd_User
+        <- mkAXI4_Master_Xactor;
+----
+
+The source for this transactor, and other related Bluespec BH/BSV
+definitions of AXI4 types, interfaces, interconnects, etc. can be
+found in the _Flute_ repository at: `src_Testbench/Fabrics/AXI4/`
+
+
+// ================================================================
+// SLIDE
+'''
+=== The Merge Engine: Flow
+
+.Merge Engine Flow (in module `mkMerge_Engine` in file `Merge_Engine.bs`)
+[#Merge_Engine_Flow]
+image::Figures/Merge_Engine_Flow.png[align="center"]
+
+* Rules `rl_req0` and `rl_req1` each traverse one input segment (left
+    and right inputs of "`merge`"), generating and launching read
+    requests to memory for each word.  They tag their requests with a
+    `tid` (transaction id) of 0 and 1 respectively, so that we can
+    disambiguate responses.
+
+* Rules `rl_rsp0` and `rl_rsp1` collect responses and place the data
+    into FIFOs `f_data0` and `f_data1`, respectively.  They use `tid`
+    to select the FIFO target.
+
+    ** Note: we assume that responses come in the order they were
+       requested, to each input segment's data will arrive into its
+       FIFO in sorted order.
+
+* Rule `rl_merge` peforms the merge, always looking at the head of
+    FIFOs `f_data0` and `f_data1`, and passing through the smaller and
+    sending it in a write-request to memory.
+
+
+* Finally, rule `rl_drain_write_rsps` collects write-responses and
+    discards them.
+
+    ** Read- and write- requests and responses all flow on different
+       "`channels`" in the AXI4 interconnect, so reads and writes do
+       not need disambiguation.
+
+    ** By waiting for write responses, we can ensure that we don't
+       start the first "`merge`" of the next pass (which reads memory)
+       before completion of the last "`merge`" of the last pass (which
+       writes memory).
+
+// ================================================================
+// SLIDE
+'''
+=== The Merge Engine: Avoiding Deadlock in the Pipeline
+
+* Deadlock scenario: suppose `f_data0` has become empty and `f_data1` has
+    become full.  Suppose the next response from memory (FIFO "`Memory
+    responses`" in the diagram) is for `f_data1`, let's call it X.
+
+    ** Then, any data meant for `f_data0`, which is "`behind`" X, is
+        stuck there behind X since we cannot move X into `f_data1`.
+
+* Solution: This is a classic "`head-of-line blocking`" scenario, and
+    the solution is standard:
+
+    ** Fix a number `max_n_reqs_in_flight` that limits the number of
+       read requests that can be outstanding from either segment.
+
+    ** Ensure that rules `rl_req0` and `rl_req1` cannot exceed this
+       number of requests:
+
+       *** Give them that many "`credits`" at the beginning.
+
+       *** Decrement the credit on each request, and don't issue any
+           request when credit is zero.
+
+    ** As items are consumed from `f_data0` and `f_data1`, restore
+       those credits.
+
+    ** Ensure that FIFOs `f_data0` and `f_data` are have enough
+       capacity to hold that many responses.
+
+Conceptually these credit counters are just registers that are
+decremented and incremented to consume and resplenish credits,
+respectively, and can be instantiated as usual using `mkRegU`.  In the
+code (file `Merge_Engine.bs`), however, we use "`Concurrent
+Registers`" for this, instantiated with `mkCRegU`.  This is a
+performance optimization, about which more in the Section
+<<ConcurrentRegs>>.
+
+// ================================================================
+// SLIDE
+'''
+=== The Mergesort Module (`mkAXI4_Accel` in file `AXI4_Accel.bs`)
+
+On the system interconnect, our accelerator is both:
+
+* a target/server (for configuration & status: receives read/write requests from CPU)
+
+* an initiator/client (for work: sends read/write requests to memory)
+
+and this is visualized in this diagram:
+
+.Mergesort module interfaces, and sketch of internal activity
+[#Mergesort_interfaces]
+image::Figures/Mergesort_interfaces.png[align="center"]
+
+The interface code is specified in the Flute repository at
+`src_Testbench/SoC/AXI4_Accel_IFC`.  It's in BSV (not BH) syntax:^1^
+
+[source]
+----
+interface AXI4_Accel_IFC;
+   method Action init (Bit# (Wd_Id) axi4_id, Bit #(Wd_Addr) addr_base, Bit #(Wd_Addr) addr_lim);
+
+   interface AXI4_Slave_IFC  #(Wd_Id, Wd_Addr, Wd_Data, Wd_User)  slave;
+
+   method Bool interrupt_req;
+
+   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User)  master;
+endinterface
+----
+
+but we can squint at it through BH-colored glasses:
+
+[source]
+----
+interface AXI4_Accel_IFC =
+   init          :: (Bit Wd_Id)  (Bit Wd_Addr)  (Bit Wd_Addr) -> Action
+   slave         :: AXI4_Slave_IFC  Wd_Id  Wd_Addr  Wd_Data  Wd_User
+   interrupt_req :: Bool
+   master        :: AXI4_Master_IFC  Wd_Id  Wd_Addr  Wd_Data  Wd_User
+----
+
+^1^ Apologies for the unpleasant "`master/slave`" terminology; it was
+used widely in hardware design and ARM used it in the AXI4 spec.
+
+// ================================================================
+// SLIDE
+'''
+=== The Mergesort Module Code (`mkAXI4_Accel` in file `AXI4_Accel.bs`)
+
+As in `Merge_Engine`, we instantiate an AXI4 slave transactor through
+which we receive AXI4 requests and send responses, for configuration.
+The configuration itself is stored in a vector of 4 registers:
+
+[source]
+----
+    target_xactor :: AXI4_Slave_Xactor_IFC  Wd_Id Wd_Addr Wd_Data Wd_User  <- mkAXI4_Slave_Xactor
+
+    v_csr :: Vector  N_CSRs  (Reg  Fabric_Addr) <- replicateM  (mkReg 0)
+----
+
+Rules `rl_handle_config_read_req` and `rl_handle_config_write_req`
+handle AXI4 requests from the CPU for initializing the configuration
+registers, receiving the "`Go!`" command from the CPU, and returning
+completion status to the CPU.
+
+We instantiate a merge-engine, and a register to hold the current
+"`span`" under consideration (which starts at 1 and doubles on each
+pass until it encompasses the whole sort array):
+
+[source]
+----
+    merge_engine :: Merge_Engine_IFC <- mkMerge_Engine
+    rg_span :: Reg  Fabric_Addr <- mkRegU
+----
+
+The next set of rules encode a state machine described by the following pseudo-code:
+
+* L0: start when we've received "`Go!`" from the CPU
+* L1: For span = 1, 2, 4, ... until >= n
+  ** L2: Initialize the pass with start-index i = 0
+  ** L3: While i < size of array
+     *** L4: Do a merge (merge_engine.start) + 
+         and increment i to the next span
+  ** L5: Double the span and exchange the array roles
+* L6: If final data is not in original array, copy it
+* L7: Wait for all merges to complete, and signal completion to CPU
+
+// ================================================================
+// SLIDE
+'''
+=== Let's do it! Compile, link the example (but don't try simulating yet)
+
+First, in `Eg040_Mergesort/Makefile`, there is a line:
+
+[source]
+----
+REPO ?= $(FLUTE)
+----
+
+Please fix up that line to point at your clone of the _Flute_ repo.  Then:
+
+[source]
+----
+$ make all
+----
+
+will use `bsc` to compile all the code and link it into a Bluesim executable.
+
+// ================================================================
+// SLIDE
+'''
+=== For simulation: RISC-V machine-code for Flute execution
+
+We have provided some pre-compiled RISC-V binaries; this diagram
+illustrates how they were created, in case you wish to do it yourself
+(later), with these, or modified, or other example programs.
+
+.Flow for creating RISC-V executables for our example
+[#RISCV_SW_Flow]
+image::Figures/RISCV_SW_Flow.png[align="center", width=600]
+
+* Source files are compiled using _gcc_ targeting RISC-V machine code
+    (instead of x86).  "`RISC-V International`" is the global
+    non-profit that steers RISC-V; you can find links to RISC-V tools
+    (including _gcc_) on their web site (https://riscv.org/[]).
+
+* ELF files are usually unpacked and loaded by an operating system
+  (but we don't have one, since we're using "`bare metal`").
+
+  ** In hardware engineering it is traditional to initialize memory
+       contents with a "`memory hex dump`".  This is just a listing in
+       ASCII hexadecimal text of memory contents.
+
+  ** In the tutorial repo, we provide an `elf_to_hex` program in `Resources/elf_to_hex`.
+
+// ================================================================
+// SLIDE
+'''
+=== Let's do it! Run the "`Hello, World!`" RISC-V binary.
+
+First, please examine:  `Resources/C_programs/hello/hello.c` +
+it's just the standard iconic "`Hello World!`" program.
+
+Then, run it on the Bluesim simulation we've just created:
+
+[source]
+----
+$ make run_hello
+cp  ../Resources/C_programs/hello/hello_Mem.hex     ./Mem.hex
+cp  ../Resources/C_programs/hello/symbol_table.txt  ./symbol_table.txt
+./exe_HW_sim  +tohost
+...
+================================================================
+Bluespec RISC-V WindSoC simulation v1.2
+Copyright (c) 2017-2020 Bluespec, Inc. All Rights Reserved.
+================================================================
+...
+================================================================
+CPU: Bluespec  RISC-V  Flute  v3.0 (RV64)
+Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+================================================================
+...
+Hello World!
+...
+----
+
+The `printf` in the program is linked by gcc to a library that writes
+out the characters to the UART (Universal Asynchronous Receiver
+Transmitter) in our SoC, and our simulation model of the UART merely
+prints each character to the screen.
+
+// ================================================================
+// SLIDE
+'''
+=== C code to test the mergesort accelerator
+
+Please examine:  `Resources/C_programs/mergesort/mergesort.c` + 
+In `main()` we have:
+
+[source]
+----
+    run (! accelerated, A, B, n);
+    ...
+    run (accelerated, A, B, n);
+----
+
+i.e., we do two runs, each sorting an array of words in memory.
+
+* In the first run, we use a C function `mergesort ()` that has been
+    compiled to RISC-V machine code, which is executed on the RISC-V CPU.
+
+* In the second run, we use our hardware accelerator.  The C code just
+    writes out the addresses and size of the arrays to the
+    accelerator, writes the "`Go!`" command, and then waits, polling,
+    for completion:
+
+* For our test, the input array is in inverse-sorted order; after
+  running a sort, some C code verifies that the output is in sorted
+  order.
+
++
+[source]
+----
+    accel_0_addr_base [1] = (uint64_t)  pA;
+    accel_0_addr_base [2] = (uint64_t)  pB;
+    accel_0_addr_base [3] = (uint64_t)  n;
+    // "Go!"
+    accel_0_addr_base [0] = (uint64_t)  1;
+
+    // Wait for completion
+    while (true) {
+        uint64_t status = accel_0_addr_base [0];
+        if (status == 0) break;
+    }
+----
+
+You will also see some calls to `fence()`.  This is to ensure that
+data values prepared by the CPU have been flushed out of caches into
+memory (so the accelerator can see them) and, after the acceleration,
+to ensure that data values updated by the accelerator are reloaded by
+the CPU into its caches.^1^
+
+^1^ This is a complex subject ("`coherence`" between memory seen by
+the CPU and by the accelerator), for which there are many approaches,
+involving hardware support and software conventions.
+
+// ================================================================
+// SLIDE
+'''
+=== Let's do it! Run the `mergesort` RISC-V binary.
+
+Here we go:
+
+[source]
+----
+$ make run_mergesort
+cp  ../Resources/C_programs/mergesort/mergesort_Mem.hex  ./Mem.hex
+cp  ../Resources/C_programs/mergesort/symbol_table.txt   ./symbol_table.txt
+./exe_HW_sim  +tohost
+...
+================================================================
+Bluespec RISC-V WindSoC simulation v1.2
+Copyright (c) 2017-2020 Bluespec, Inc. All Rights Reserved.
+================================================================
+...
+================================================================
+CPU: Bluespec  RISC-V  Flute  v3.0 (RV64)
+Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+================================================================
+...
+Running C function for mergesort
+Verified 3000 words sorted
+ Sorting took  1932331 cycles
+Done
+Running hardware-accelerated mergesort
+...
+Verified 3000 words sorted
+ Sorting took   321869 cycles
+Done
+----
+
+We can see that accelerated sort has about a 6X speedup over the
+software sort.  This is respectable, but not huge, in part because
+mergesort, even when run in software, is mostly limited by memory
+system performance (it does not do much computation on the data read
+from memory).  Flute does nto have a sophisticated memory system, and
+the hardware accelerator has lots of room for improvment (see next
+section).
+
+// ================================================================
+// SLIDE
+'''
+=== Mergesort: Possible Improvements (suggested exercise!)
+
+Robustness:
+
+* Proper use of `fence` instructions in the C code
+* Support misaligned data
+
+Functionality and generality:
+
+* Allow "`records`" (`structs`) for data, of various sizes, sorting on
+      a key field of any type with `Ord`.
+* Allow `scatter/gather` arrays (indirection from arrays to records).
+* Allow out-of-order responses from memory
+
+Performance:
+
+* Use AXI4's "`burst`" reads and writes to read/write segments,
+  instead of individual-word reads/writes.
+* Replicate `mkMerge_Engine` to do multiple merges in each step
+    concurrently (if memory has the bandwidth to support it)
+
+// ****************************************************************
+// ****************************************************************
+// Section; SLIDE
+'''
+== Clocks, Concurrency Semantics, Performance, and Concurrent Registers
+
+[#ConcurrencySemantics]
+[#ConcurrentRegs]
+
+NOTE: This section is a bit heavy, and can safely be skipped on
+    first reading.  But it is an important topic describing aspects of
+    BH/BSV that are essential for performance tuning.
+
+* Although we have been generating clocked hardware in all our
+    examples, we have hardly mentioned clocks at all in our
+    discussion, and in fact our source codes have no mention of clocks
+    (_bsc_ managed all the details for us).  This is the norm when
+    working with BH/BSV: we mostly think in terms of rule steps
+    (all actions of a rule, performed atomically).
+
+* The _bsc_ compiler translates BH/BSV into clocked digital hardware
+    (expressed in Verilog).  Every rule is mapped into hardware that
+    executes in a single clock^1^, and _bsc_ tries to have as many
+    rules firing in a clock as possible, for maximum performance.
+
+* In this section:
+
+  ** We provide some insight into how _bsc_ allows multiple rules to
+        fire in a clock while preserving atomicity
+
+  ** We describe another primitive (Concurrent Registers, or CRegs)
+        that permit higher degrees of concurrency (multiple rules in a
+        clock) than ordinary registers (CRegs were used for the
+        "`credit counters`" in the Merge Engine in our Mergesort
+        example).
+
+^1^ There is nothing in BH/BSV rule semantics that demands that a rule
+  must fire within one clock; it's a choice by the
+  compiler. Alternative compilation strategies can change that; the
+  only sacrosanct property is that a rule's actions must appear to be
+  atomic with respect to all other rules.
+
+// ================================================================
+// SLIDE
+'''
+=== Concurrency and Parallelism in _bsc_-generated Hardware for Rules
+
+Rule semantics are explained in two parts:
+
+* Individual rule: logically, a rule fires in a single instant.  All
+  the actions in the rule (and in any methods it invokes) happen at
+  the same instant.  We call this _parallelism of actions_.
+
+* Multiple rules within a clock: logically, they execute in sequence,
+  so the overall state change in a clock can be understood as the
+  simple sequential composition of the state changes of the individual
+  rules.  We call this the _concurrency of rules_.
+
+This is visualized in the following picture:
+
+.Concurrency and Parallelism in _bsc_-generated Hardware for Rules
+[#ConcurrencyParallelism]
+image::Figures/ConcurrencyParallelism.png[align="center"]
+
+// ================================================================
+// SLIDE
+'''
+=== Parallelism (Simultaneity) of Actions in a Rule
+
+Suppose we had a rule like this:
+
+[source]
+----
+when ((y /= 0) && got_x && got_y) ==> do
+   if1 (lsb(y) == 1) w := w + x
+   x := x << 1
+   y := y >> 1
+----
+
+There are three actions in the rule. All are governed by the rule
+condition, but one of them (assignment to `w`) is further governed by
+the predicate of the `if`.  The hardware corresponding to this can be
+visualized as in this picture:
+
+.Parallel (Simultaneous) Actions in a Rule
+[#RuleActions_HW_Intuition]
+image::Figures/RuleActions_HW_Intuition.png[align="center"]
+
+It consists of combinational circuits (pure functions, acyclic graphs
+built from primitive gates) originating at value methods of certain
+primitives (here, register reads), and feeding data inputs and
+"`enable`" inputs (EN/ENA/ENABLE) of state elements (here, registers).
+These EN and data inputs of primitives correspond to their Action.
+
+When a state element's EN is asserted at a clock edge, it captures
+(or, consumes) the value on its data input, at the instant of the
+clock edge.  Since all the state elements are driven by the same
+clock, these actions all happen at the same instant.
+
+In the picture, if the rule condition (`CAN_FIRE`) is false, none of
+the actions will be performed. If true, the `x` and `y` writes will
+occur. If the `if` condition is also true, the `w` write will occur.
+
+.Semantics of an individual rule:
+....
+    (Simultaneously)
+    For each of the rule’s actions whose enabling condition is True,
+        do the action
+....
+
+Summary:
+
+* There is no ordering among the actions of a rule; they all happen at the same instant.
+* Not all actions may be performed (due to internal conditions in the rule).
+* Any values "`read`" by the rule are from "`before`" the instant of execution.
+* any values affected by the rule are visible only `after`" the instant.
+
+.Parallel (Simultaneous) Actions in a Rule
+[#RuleActions]
+image::Figures/RuleActions.png[align="center", width=300]
+
+// ================================================================
+// SLIDE
+'''
+=== Concurrency of Rules Within a Clock
+
+Define a schedule as some linear ordering of all rules in a program: r1, r2, ..., rN
+
+(For now, consider _any_ order; defer the question of how to pick an order.)
+
+.Concurrency of Rules Within a Clock
+[#RuleConcurrency1]
+image::Figures/RuleConcurrency1.png[align="center"]
+
+.Semantics of rules within each clock:
+....
+    Consider each rule in schedule order:
+        If its rule-condition is true,
+           and it does not conflict with rules already executed in this clock
+        Then execute this rule
+....
+
+We will explain "`conflict`" in a moment.
+
+// ================================================================
+// SLIDE
+'''
+=== Method-ordering Constraints (Inducing "`Conflicts`")
+
+Consider two rules in schedule order that may invoke methods `mA` and
+`mB` of a common module `x`.  These method invocations may be in the
+rule's condition or in its body.
+
+[#RuleOrdering1]
+image::Figures/RuleOrdering1.png[align="center", width=300]
+
+For every module `x`, each pair of its methods has one of the following ordering constraint:
+
+.Method order constraints
+[cols="^1,<2"]
+|===
+| _Constraint_            | _Meaning_
+| mA conflict-free mB     | Rules invoking mA and mB can fire in same clock, in either order
+| mA < mB                 | Rule invoking mA can fire before rule invoking mB
+| mA > mB                 | Rule invoking mB can fire before rule invoking mA
+| mA confict mB           | Rules invoking mA and mB _cannot_ fire in same clock (neither order)
+|=== 
+
+* For primitive modules, these constraints are built-in ("`given`", "`axiomatic`").
+
+* For user-defined modules, these are inferred from the module implementation (by the compiler).
+
+// ================================================================
+// SLIDE
+'''
+=== Example of Method-ordering Constraints on Primitive Registers
+
+For standard primitive registers (which we get using `mkReg` and
+`mkRegU`) the given method-ordering constraint is: `_read < _write`
+
+ * One can see how this models a real hardware register: during a
+    clock, we can only read the old value (from the last clock edge)
+    and when we write, it is only visible after the next clock edge.
+
+These constraints may result in a _conflict_ for some rule schedules:
+
+[#RegisterMethodOrdering]
+image::Figures/RegisterMethodOrdering.png[align="center"]
+
+// ================================================================
+// SLIDE
+'''
+=== From Method Ordering to Rule Conflicts
+
+We say that there is a conflict between an ordered pair of rules r1
+and r2 + if there is an ordering conflict between _any_ pair of
+methods x.m1 invoked in r1 and x.m2 invoked in r2 (on the same module
+instance x).
+
+[#RuleOrdering2]
+image::Figures/RuleOrdering2.png[align="center", width=400]
+
+// ================================================================
+// SLIDE
+'''
+=== For Conflicts, the Earlier Rule Disables the Later Rule
+
+Suppose the compiler has chosen the following schedule
+
+.Schedule of Rules Within a Clock
+[#RuleConcurrency2]
+image::Figures/RuleConcurrency2.png[align="center", width=300]
+
+and suppose there is a conflict between r3 and r5, i.e., they each
+invoke methods on some common module instance x where the
+method-ordering contraints are not consistent with the schedule order.
+
+The compiler produces hardware that disables rule r5 whenever r3
+fires, i.e., logic that looks like this:
+
+....
+        WILL_FIRE_r5 = (! WILL_FIRE_r3) && CAN_FIRE_r5
+....
+
+`CAN_FIRE_r5` is r5's condition seen in isolation: its rule-condition and its method-conditions.
+
+`WILL_FIRE_r5` indicates whether the rule will actually fire on this clock.
+
+// ================================================================
+// SLIDE
+'''
+=== Summary of Rule Semantics
+
+* When compiled, a BH/BSV program has a statically determined
+  _schedule_ of rules (a linear ordering).
+
+* On every clock, conceptually rules are considered in schedule order.
+
+* A rule `WILL_FIRE` if its own condition (`CAN_FIRE`) is true
+    (rule-condition + method conditions) and if firing the rule would
+    not violate a method-ordering conflict with any rule already
+    executed in this clock.
+
+* When a rule fires, all its actions are performed at the same instant.
+
+* The overall state-change in a clock is the sequential composition of
+    the state changes due to individual rules fired in the clock in
+    schedule order.
+
+NOTE: This only explains the strategy used by our particular compiler
+    (_bsc_) to achieve the high-level goal that rules must fire
+    atomically.  Other strategies for executing BH/BSV are possible,
+    including strategies that don't involve clocks (asynchronous
+    logic), etc.
+
+NOTE: The semantics works for _any_ schedule (linear ordering).  The
+  _bsc_ compiler implements some sophisticated analyses to produce a
+  "`good`" order, with "`goodness`" measured by more concurrency.
+  Other objectives, such as energy-efficiency may result in different
+  choices.
+
+// ================================================================
+// SLIDE
+'''
+=== Concurrent Registers (CRegs): Motivation
+
+From the previous discussion, it should be clear that if two rules rA
+and rB invoke the `_read` and `_write` methods of a standard register,
+respectively, then they can fire concurrently only if rA is earlier in
+the schedule than rB.
+
+But consider the "`credit`" counter we saw in the Merge Engine of our
+Mergesort example.
+
+* When a memory request is launched, we decrement the credit counter (use credit).
+
+* When a memory response is consumed, we increment the credit counter (replenish credit).
+
+Both rules read and write the register, and so these two rules can
+never fire concurrently (either ordering will have a `_write` before a
+`_read`).  The rules can only fire on different clocks.
+
+// ================================================================
+// SLIDE
+'''
+=== Concurrent Registers (CRegs)
+
+A CReg is another register-like primitive.  It provides, as its
+interface, an _array__ of `Reg` interfaces (let us call each a
+"`port`"), with the following ordering constraints:
+
+.CReg method ordering constraints
+[cols="^1,^5,^1,^5"]
+|=== 
+|   |   ports [0]._read  | <= | ports [0]._write
+| < |   ports[1]._read   | <= | ports[1]._write
+| < |   ports[2]._read   | <= | ports[2]._write
+| < |      ...           | <= | ...
+| < |   ports[n-1]._read | <= | ports[n-1]._write
+|===
+
+At each index j, read and write are ordered like an ordinary register.
+But what is interesting and different from a standard register is that
+the read on a later port can be scheduled _after_ a write on an
+earlier port.  That means that value written in one port is available
+and communicated to reads on higher ports.
+
+Returning to our credit counter problem, we can schedule the
+incrementing and decrementing rules concurrently by using different
+ports of a CReg (the choice of ports will determine which rule goes
+first).  This is indeed the case in the example code in module
+`mkMerge_Engine` in file `Merge_Engine.bs`.
+
+// ================================================================
+// SLIDE
+'''
+=== Concurrent Registers (CRegs): Hardware Implemntation
+
+Here is a hardware implementation of the CReg primitive.
+
+.CReg Hardware Implementation
+[#CReg_HW]
+image::Figures/CReg_HW.png[align="center", width=500]
+
+It contains a standard register with a series of muxes (multiplexers).
+At index 0, the read-value is the standard register value.  At index
+1, the read-value is muxed from the index-0 write (if it occurs) and
+the previous read-value, and so on.
+
+The neat property about a CReg is that, when thinking at the abstract
+level of rules (no clocks, just rule-steps), they are equivalent to
+standard registers (just ignore the port indexes).  Thus, they are an
+excellent formal bridge betwen the two levels of abstraction: rules by
+themselves, and rules-mapped-to-clocks.
+
+In general, the process of designing a system can be separated cleanly
+into two phases:
+
+1. Do the design just thinking in terms of rules, and using standard
+    registers, and establish correctness of the design.
+
+2. Selectively and judiciously replace standard registers with CRegs
+    to tune up performance to required performance goals.
+
+// ****************************************************************
+// ****************************************************************
+// Section; SLIDE
+'''
+== A Word About Multiple Clocks (and Resets) and Clock Domains (and Reset Domains)
+
+[#Clocks]
+
+Many non-trivial hardware systems involve multiple clocks: certain
+parts of the circuit may run at higher clock speeds and other parts at
+slower clock speeds.  The motivations may include balancing energy
+consumption (higher clock speeds burn more energy), adhering to
+externally mandated clocking standards (e.g., for standard interfaces
+like USB or PCIe), etc.
+
+Usually a system has a clean "`partitioning`" into discrete "`clock
+domains`" each clocked by a single clock.  This partitioning is
+orthogonal to the module hierarchy, i.e., clock domains may cut across
+a module hierarchy; a module may contain sections on different clocks.
+
+So called "`clock-domain discipline`" ensures that communication from
+one clock-domain to another is only done through certain carefully
+engineered domain-crossing primitives called "`synchronizers`".
+
+In BH/BSV, Clocks and Reset are first-class types, and can be made
+explicitly visible as interfaces and values, and "`plumbed`" through
+the module hierarchy using usual function an module composition
+mechanisms.  Further, clock-domain discipline undergoes strong static
+checking guaranteeing that domain-crossings always go through
+synchronizers.
+
+// ****************************************************************
+// ****************************************************************
+// Section; SLIDE
+'''
+== Quality metrics for hardware
+
+The quality of a hardware system is measured in several ways.
+
+* Silicon level:
+    ** Area (gates, mm^2, LUTs, RAMs, DSPs, ...)
+    ** Clock speed (MHz)
+    ** Energy and Energy Efficiency (Joules, Watts)
+
+* Micro-architecture level:
+    ** Latency: how long does it take to process a datum?
+    ** Throughput: how many data per time (due to concurrency: pipelining, replication, ...)?
+
+* Application level
+    ** Wall-clock time
+
+* Accelerators
+    ** Speedup
+    ** Overhead of hand-offs from main CPU to accelerator and back (cf. Amdahl's Law)
+
+// ================================================================
+// SLIDE
+'''
+=== Formal Verification
+
+* Historically, in the HW design community, "`Verification`" has meant "`Testing`"
+   ** Although, in the ASIC world, testing has historically been
+        _much_ more rigorous than in the SW world, given that the cost
+        of an error can be in the millions of dollars.
+
+* Formal verification tools for SystemVerilog have recently become
+    available, and now being used for small-subystem verification.
+
+* BH/BSV's strong (Haskell-ish) type-checking itself provides a
+    certain degree of formal verification not previously available in
+    HDLs.
+
+* BH/BSV's composable _Guarded Atomic Actions_ opens the door for an
+  even stronger role for formal verication.
+  ** Atomic transactions are the most powerful construct available for reasoning about concurrent behaviors
+
+// ****************************************************************
+// ****************************************************************
+// Section; SLIDE
+'''
+== Endnote: Comparison with other approaches to hardware-design
+
+In Section <<HDLS_vs_HLS>> we have already compared HDLs against HLS (see <<GajskiHLS>>)
+(synthesis of hardware from and algorithm specified in C/C++).
+
+Both Chisel (see <<Chisel>>) and BSV significantly raise the level of
+abstraction and expressive power of HDLs compared to Verilog (see
+<<IEEEVerilog2005a>>), SystemVerilog (see <<IEEESystemVerilog2012a>>)
+and VHDL (see <<IEEEVHDL2002>>).  Chisel achieves this by being an
+embedded DSL inside Scala, and is thus able to use Scala's expressive
+power to express abstractions and composition.
+
+There have been a few attempts at using Haskell directly for hardware design:
+
+* "`Lava`" (see <<Lava>>) is an embedded DSL in Haskell, using Haskell
+    to express powerful and high-level combinators for structural
+    composition of clocked digital circuits.
+
+* Clash (see https://clash-lang.org/[]) borrows notation and types
+    from Haskell, but is not an embedded DSL; it has its own compiler.
+    The Haskell-ish notation is used directly to express computational
+    circuits, with `Signal` datatype arguments/results indicating
+    sequential (stateful) circuits.
+
+In all the above approaches, clocked digital logic is front and
+center; it is the central model of behavior, and they are all directly
+describing clocked digital circuits.  To our knowledge, BH/BSV is
+unique in having atomic rules as its central behavioral model,
+adjoined with a methodology of how these are mapped to clocked digital
+circuits.
+
+// ****************************************************************
+// ****************************************************************
+// Section; SLIDE
+'''
+== Bibliography
+
+[[[AXISpec]]]
+_AMBA AXI and ACE Protocol Specification: AXI3 , AXI4 , and AXI4-Lite; ACE and ACE-Lite_,
+Document IHI 0022E (ID022613), ARM, 2013
+
+[[[Chisel]]]
+_Chisel: constructing hardware in a Scala embedded language_
+Jonathan Bachrach _et. al._,
+in _Proceedings of the 49th Annual Design Automation Conference (DAC 2012).
+San Francisco, CA, USA_,
+June 2012,
+pp. 1216–1225.
+
+[[[RefGuide]]]
+_Bluespec SystemVerilog Reference Guide_,  Bluespec, Inc.,
+July 21, 2017, 421pp.
+
+[[[UserGuide]]]
+_Bluespec SystemVerilog and Bluespec Development
+Workstations User Guide_, Bluespec, Inc., July 21, 2017, 118pp.
+
+[[[GajskiHLS]]]
+_High-level synthesis: introduction to chip and system design_,
+D.D. Gajski,
+Kluwer Academic, Boston, 1992
+
+[[[IEEEVerilog2005a]]]
+_IEEE Standard Verilog (R) Hardware Description Language_, IEEE,
+IEEE Std 1364-2005, 2005.
+
+[[[IEEESystemVerilog2012a]]]
+_IEEE Standard for System Verilog---Unified Hardware Design, Specification and Verification Language_,
+IEEE, IEEE Std 1800-2012, February 21, 2013.
+
+[[[IEEEVHDL2002]]]
+_IEEE Standard VHDL Language Reference Manual, IEEE Std 1076-1993_,
+IEEE, 2002
+
+[[[IEEESystemC2011a]]]
+_IEEE Standard for Standard SystemC Language Reference Manual_,
+IEEE, IEEE Std 1666-2011, January 9, 2012.
+
+[[[Kernighan78]]]
+_The C Programming Language_,
+Brian W. Kernighan and Dennis M. Ritchie,
+Prentice Hall,
+1978
+
+[[[BluespecCACM]]]
+_Abstraction in Hardware System Design_,
+Rishiyur S. Nikhil,
+in _Communications of the ACM_, 54:10, October 2011, pp. 36-44
+
+[[[BSV_by_Example]]] _BSV by Example_, Rishiyur S. Nikhil and Kathy R. Czeck,
+December 2010, 302pp., ISBN-10: 1456418467; ISBN-13: 978-1456418465; available on
+http://www.amazon.com/BSV-Example-Rishiyur-S-Nikhil/dp/1456418467/ref=sr_1_2?ie=UTF8&s=books&qid=1294863695&sr=8-2[Amazon].
+
+[[[Haskell98Report]]]
+_Haskell 98 Language and Libraries: The Revised Report_,
+Simon L. Peyton Jones (Editor),
+Cambridge University Press,
+May 5, 2003, pp._272., haskell.org
+
+[[[Lava]]]
+_Lava: Hardware Design in Haskell_,
+Per Bjesse, Koen Claessen and Mary Sheeran and Satnam Singh,
+in _Proc. ACM Intl. Conf. on Functional Programming (ICFP),
+1998
+
+// ****************************************************************
+// ****************************************************************
+// END OF PRESENTATION
+'''
