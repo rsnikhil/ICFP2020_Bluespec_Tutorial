@@ -1,5 +1,5 @@
 ###  -*-Makefile-*-
-# Copyright (c) 2018-2019 Bluespec, Inc. All Rights Reserved
+# Copyright (c) 2018-2020 Bluespec, Inc. All Rights Reserved
 
 # ================================================================
 

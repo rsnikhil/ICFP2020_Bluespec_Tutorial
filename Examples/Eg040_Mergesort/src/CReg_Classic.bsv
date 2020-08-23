@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2020 Bluespec, Inc. All Rights Reserved.
 
 // ================================================================
 // This is a BSV package that is just a simple wrapper for CReg that

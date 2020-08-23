@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2020 Bluespec, Inc. All Rights Reserved
 
 // Ad hoc program to generate a 32-bit-wide mem hex file
 
