@@ -370,6 +370,8 @@ section).
 
 [source]
 ----
+$pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg020a_HelloWorld
 $ make b_compile
 mkdir  -p build_b_sim
 Compiling for Bluesim ...
@@ -786,7 +788,8 @@ NOTE: The module monad is actually a polymorphic `IsModule` typeclass,
 Using Bluesim:
 [source]
 ----
-$ cd  Examples/Eg020b_HelloWorld
+$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg020b_HelloWorld
 $ make  b_compile  b_link  b_sim
 ----
 
@@ -1152,7 +1155,10 @@ At this point,  again, only one rule can fire:
 Using Bluesim or Verilog sim:
 [source]
 ----
-$ ./mkTop_b_sim
+$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg020c_HelloWorld
+$ make b_compile b_link b_sim
+...
 Asking the Ultimate Question of Life, The Universe and Everything
         DeepThought: ... thinking ... (0 million years)
         DeepThought: ... thinking ... (0.5 million years)
@@ -1242,12 +1248,17 @@ image::./Figures/Hello_World_C_mkDeepThought_1.png[align="center", width=800]
 '''
 ==== Waveforms: VCD files and Waveform viewers
 
-Now let's run the Bluesim simulation with the `-V` flag, or the IVerilog
-simulation using the `+bscvcd` flag:
+Now let's run the Bluesim simulation with the `-V` flag:
 
 [source]
 ----
 $ ./mkTop_b_sim  -V
+----
+
+or the IVerilog simulation using the `+bscvcd` flag:
+
+[source]
+----
 $ ./mkTop_v_sim  +bscvcd
 ----
 
@@ -1710,6 +1721,8 @@ Use Bluesim or Verilog sim, and generate a VCD waveform file:
 
 [source]
 ----
+$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg030a_Bubblesort
 $ make b_compile b_link b_sim_vcd
 ...
 Bluesim simulation ...
@@ -1753,7 +1766,7 @@ top-level file `src/Top.bs` is identical to the previous version, we're
 only changing the internal implementation of Bubblesort).
 
 New strategy: the module will perform swaps concurrently.  In
-fact, it can start swaps as inputs are being streamed in.
+fact, it starts swapping as inputs are streamed in.
 
 .Behavior in concurrent Bubblesort
 [#Bubblesort_B_overview]
@@ -1926,8 +1939,11 @@ image::./Figures/Bubblesort_B_get.png[align="center", width=500]
 '''
 ==== Let's do it! Compile, link and simulate the example, and look at waves
 
-Use Bluesim or Verilog sim, and generate a VCD waveform file (text
-output the same as Version (a)).
+Use Bluesim or Verilog sim, and generate a VCD waveform file.
+
+Observe that the text output on the terminal is exactly the same as
+Version (a).  What's different will be the internal concurrency and
+timing, which is visible in the VCD file.
 
 .Waveforms from concurrent Bubblesort
 [#Bubblesort_B_Waves]
@@ -2036,8 +2052,8 @@ Rules as first class objects: adding a generated list of rules to a module's col
     addRules_list_descending_urgency  (List.map  gen_swap_rule  (List.upto  0  (n - 2)))
 ----
 
-
-
+The `descending_urgency` provides additional direction to _bsc_ please
+to give the rules a descending priority order.
 
 // ================================================================
 '''
@@ -2155,10 +2171,12 @@ The source code for our Mergesort example is in two files of <300 lines each:
     ICFP2020_Bluespec_Tutorial/Examples/Eg040_Mergesort/src/Merge_Engine.bs
 ----
 
-Please feel free to peruse the Flute code at your leisure.  It is
-written in BSV, not BH, but if you squint appropriately, it has the
-same underlying syntactic structure as BH.  The two major parts of the
-repo are:
+.Regarding Flute and WindSoC 
+****
+Please feel free to peruse the Flute and WindSoC code at your leisure.
+It is written in BSV, not BH, but if you squint appropriately, it has
+the same underlying syntactic structure as BH.  The two major parts of
+the repo are:
 
 * `$(FLUTE)$/src_Core/`: RISC-V ISA definitions, Flute CPU, caches and
   MMUs, PLIC (Platform Level Interrupt Controller), `Near_Mem_IO`
@@ -2173,6 +2191,7 @@ repo are:
 The repo also has build directories for several variants (32-bit and
 64-bit RISC-V, with and without Virtual Memory, etc.), precompiled ISA
 tests, scripts to run everything, etc.
+****
 
 // ================================================================
 // SLIDE
@@ -2427,7 +2446,10 @@ interface AXI4_Accel_IFC =
 ----
 
 ^1^ Apologies for the unpleasant "`master/slave`" terminology; it was
-used widely in hardware design and ARM used it in the AXI4 spec.
+used widely in hardware design and ARM used it in their AXI4 spec
+(<<AXISpec>>, 2013).  For new designs we suggest using "`client`" or
+"`initiator`" instead of "`master`" and "`server`" or "`target`"
+instead of "`slave`".
 
 // ================================================================
 // SLIDE
@@ -2484,23 +2506,46 @@ First, in `Eg040_Mergesort/Makefile`, there is a line:
 REPO ?= $(FLUTE)
 ----
 
-Please fix up that line to point at your clone of the _Flute_ repo.  Then:
+Please define an environment variable `FLUTE` to point at your clone
+of the _Flute_ repo, or edit the `Makefile` line to point at it.
+
+Then, compile and link it (but not simulate):
 
 [source]
 ----
+$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg040_Mergesort
 $ make all
 ----
 
-will use `bsc` to compile all the code and link it into a Bluesim executable.
+This will use `bsc` to compile all the code (our two local source
+files, and a very large number of source files from the Flute/WindSoc
+repository) and link it into a Bluesim executable.
+
+Before we run the simulation, we need some RISC-V binaries for _Flute_ to execute.
 
 // ================================================================
 // SLIDE
 '''
 === For simulation: RISC-V machine-code for Flute execution
 
-We have provided some pre-compiled RISC-V binaries; this diagram
-illustrates how they were created, in case you wish to do it yourself
-(later), with these, or modified, or other example programs.
+We are going to execute (pre-compiled versions of) two C programs:
+[source]
+----
+$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Resources/C_programs
+
+$ ls hello/
+hello*	hello.c  hello.map  hello_Mem.hex  hello.text  Makefile  symbol_table.txt
+
+$ ls mergesort/
+mergesort*   mergesort.map	mergesort.text
+mergesort.c  mergesort_Mem.hex	symbol_table.txt
+----
+
+We have provided pre-compiled RISC-V binaries; this diagram
+illustrates how they were created, in case you wish to recreate them
+yourself (later), or repeat the flow with new or modified C programs.
 
 .Flow for creating RISC-V executables for our example
 [#RISCV_SW_Flow]
@@ -2511,6 +2556,12 @@ image::Figures/RISCV_SW_Flow.png[align="center", width=600]
     non-profit that steers RISC-V; you can find links to RISC-V tools
     (including _gcc_) on their web site (https://riscv.org/[]).
 
+  ** When running _gcc_, it uses some "`bare metal`" libraries in `C_programs/lib`
+
+  ** From `hello.c`, _gcc_ produces `hello` (ELF executable),
+     `hello.text` (RISC-V Assembly Language listing), `hello.map`
+     (linker map).
+
 * ELF files are usually unpacked and loaded by an operating system
   (but we don't have one, since we're using "`bare metal`").
 
@@ -2519,6 +2570,9 @@ image::Figures/RISCV_SW_Flow.png[align="center", width=600]
        ASCII hexadecimal text of memory contents.
 
   ** In the tutorial repo, we provide an `elf_to_hex` program in `Resources/elf_to_hex`.
+  ** This produces, for example, `hello_Mem.hex` and `symbol_table.txt`
+
+(This process is also described in more detail in the README in the `C_programs/` directory.)
 
 // ================================================================
 // SLIDE
@@ -2532,6 +2586,9 @@ Then, run it on the Bluesim simulation we've just created:
 
 [source]
 ----
+$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg040_Mergesort
+
 $ make run_hello
 cp  ../Resources/C_programs/hello/hello_Mem.hex     ./Mem.hex
 cp  ../Resources/C_programs/hello/symbol_table.txt  ./symbol_table.txt
@@ -2616,10 +2673,11 @@ involving hardware support and software conventions.
 '''
 === Let's do it! Run the `mergesort` RISC-V binary.
 
-Here we go:
-
 [source]
 ----
+$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg040_Mergesort
+
 $ make run_mergesort
 cp  ../Resources/C_programs/mergesort/mergesort_Mem.hex  ./Mem.hex
 cp  ../Resources/C_programs/mergesort/symbol_table.txt   ./symbol_table.txt

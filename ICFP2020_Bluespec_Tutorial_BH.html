@@ -1091,7 +1091,9 @@ section).</p>
 <h5 id="_compile">Compile &#8230;&#8203;</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ make b_compile
+<pre class="highlight"><code>$pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg020a_HelloWorld
+$ make b_compile
 mkdir  -p build_b_sim
 Compiling for Bluesim ...
 bsc -u -sim -simdir build_b_sim -bdir build_b_sim -info-dir build_b_sim -keep-fires  -aggressive-conditions  -no-warn-action-shadowing  -check-assert  -cpp +RTS -K128M -RTS  -show-range-conflict      -p src:../Resources:+ -g mkTop  src/Top.bs
@@ -1650,7 +1652,8 @@ The module monad is actually a polymorphic <code>IsModule</code> typeclass,
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ cd  Examples/Eg020b_HelloWorld
+<pre class="highlight"><code>$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg020b_HelloWorld
 $ make  b_compile  b_link  b_sim</code></pre>
 </div>
 </div>
@@ -2128,7 +2131,10 @@ At this point,  again, only one rule can fire:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ ./mkTop_b_sim
+<pre class="highlight"><code>$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg020c_HelloWorld
+$ make b_compile b_link b_sim
+...
 Asking the Ultimate Question of Life, The Universe and Everything
         DeepThought: ... thinking ... (0 million years)
         DeepThought: ... thinking ... (0.5 million years)
@@ -2241,13 +2247,19 @@ Action and ActionValue methods that it invokes.</p>
 <div class="sect3">
 <h4 id="_waveforms_vcd_files_and_waveform_viewers">4.4.12. Waveforms: VCD files and Waveform viewers</h4>
 <div class="paragraph">
-<p>Now let&#8217;s run the Bluesim simulation with the <code>-V</code> flag, or the IVerilog
-simulation using the <code>+bscvcd</code> flag:</p>
+<p>Now let&#8217;s run the Bluesim simulation with the <code>-V</code> flag:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ ./mkTop_b_sim  -V
-$ ./mkTop_v_sim  +bscvcd</code></pre>
+<pre class="highlight"><code>$ ./mkTop_b_sim  -V</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or the IVerilog simulation using the <code>+bscvcd</code> flag:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>$ ./mkTop_v_sim  +bscvcd</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2791,7 +2803,9 @@ but also it can only fire when <code>sorter.get</code> is enabled.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ make b_compile b_link b_sim_vcd
+<pre class="highlight"><code>$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg030a_Bubblesort
+$ make b_compile b_link b_sim_vcd
 ...
 Bluesim simulation ...
 ./mkTop_b_sim
@@ -2838,7 +2852,7 @@ only changing the internal implementation of Bubblesort).</p>
 </div>
 <div class="paragraph">
 <p>New strategy: the module will perform swaps concurrently.  In
-fact, it can start swaps as inputs are being streamed in.</p>
+fact, it starts swapping as inputs are streamed in.</p>
 </div>
 <div id="Bubblesort_B_overview" class="imageblock" style="text-align: center">
 <div class="content">
@@ -3047,8 +3061,12 @@ to 0, making the module ready for its next use (enabling <code>get</code> again)
 <div class="sect3">
 <h4 id="_let_s_do_it_compile_link_and_simulate_the_example_and_look_at_waves">5.2.6. Let&#8217;s do it! Compile, link and simulate the example, and look at waves</h4>
 <div class="paragraph">
-<p>Use Bluesim or Verilog sim, and generate a VCD waveform file (text
-output the same as Version (a)).</p>
+<p>Use Bluesim or Verilog sim, and generate a VCD waveform file.</p>
+</div>
+<div class="paragraph">
+<p>Observe that the text output on the terminal is exactly the same as
+Version (a).  What&#8217;s different will be the internal concurrency and
+timing, which is visible in the VCD file.</p>
 </div>
 <div id="Bubblesort_B_Waves" class="imageblock" style="text-align: center">
 <div class="content">
@@ -3204,6 +3222,10 @@ sorted, and <code>t</code> is the type of the values to be sorted.</p>
 <div class="content">
 <pre class="highlight"><code>    addRules_list_descending_urgency  (List.map  gen_swap_rule  (List.upto  0  (n - 2)))</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>The <code>descending_urgency</code> provides additional direction to <em>bsc</em> please
+to give the rules a descending priority order.</p>
 </div>
 <hr>
 </div>
@@ -3404,11 +3426,14 @@ cloned from GitHub:</p>
     ICFP2020_Bluespec_Tutorial/Examples/Eg040_Mergesort/src/Merge_Engine.bs</code></pre>
 </div>
 </div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Regarding Flute and WindSoC</div>
 <div class="paragraph">
-<p>Please feel free to peruse the Flute code at your leisure.  It is
-written in BSV, not BH, but if you squint appropriately, it has the
-same underlying syntactic structure as BH.  The two major parts of the
-repo are:</p>
+<p>Please feel free to peruse the Flute and WindSoC code at your leisure.
+It is written in BSV, not BH, but if you squint appropriately, it has
+the same underlying syntactic structure as BH.  The two major parts of
+the repo are:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -3430,6 +3455,8 @@ wrapper for simulation.</p>
 <p>The repo also has build directories for several variants (32-bit and
 64-bit RISC-V, with and without Virtual Memory, etc.), precompiled ISA
 tests, scripts to run everything, etc.</p>
+</div>
+</div>
 </div>
 <hr>
 </div>
@@ -3792,7 +3819,10 @@ endinterface</code></pre>
 </div>
 <div class="paragraph">
 <p><sup>1</sup> Apologies for the unpleasant &#8220;master/slave&#8221; terminology; it was
-used widely in hardware design and ARM used it in the AXI4 spec.</p>
+used widely in hardware design and ARM used it in their AXI4 spec
+(<a href="#AXISpec">[AXISpec]</a>, 2013).  For new designs we suggest using &#8220;client&#8221; or
+&#8220;initiator&#8221; instead of &#8220;master&#8221; and &#8220;server&#8221; or &#8220;target&#8221;
+instead of &#8220;slave&#8221;.</p>
 </div>
 <hr>
 </div>
@@ -3880,24 +3910,51 @@ and increment i to the next span</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Please fix up that line to point at your clone of the <em>Flute</em> repo.  Then:</p>
+<p>Please define an environment variable <code>FLUTE</code> to point at your clone
+of the <em>Flute</em> repo, or edit the <code>Makefile</code> line to point at it.</p>
+</div>
+<div class="paragraph">
+<p>Then, compile and link it (but not simulate):</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ make all</code></pre>
+<pre class="highlight"><code>$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg040_Mergesort
+$ make all</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>will use <code>bsc</code> to compile all the code and link it into a Bluesim executable.</p>
+<p>This will use <code>bsc</code> to compile all the code (our two local source
+files, and a very large number of source files from the Flute/WindSoc
+repository) and link it into a Bluesim executable.</p>
+</div>
+<div class="paragraph">
+<p>Before we run the simulation, we need some RISC-V binaries for <em>Flute</em> to execute.</p>
 </div>
 <hr>
 </div>
 <div class="sect2">
 <h3 id="_for_simulation_risc_v_machine_code_for_flute_execution">6.14. For simulation: RISC-V machine-code for Flute execution</h3>
 <div class="paragraph">
-<p>We have provided some pre-compiled RISC-V binaries; this diagram
-illustrates how they were created, in case you wish to do it yourself
-(later), with these, or modified, or other example programs.</p>
+<p>We are going to execute (pre-compiled versions of) two C programs:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Resources/C_programs
+
+$ ls hello/
+hello*	hello.c  hello.map  hello_Mem.hex  hello.text  Makefile  symbol_table.txt
+
+$ ls mergesort/
+mergesort*   mergesort.map	mergesort.text
+mergesort.c  mergesort_Mem.hex	symbol_table.txt</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We have provided pre-compiled RISC-V binaries; this diagram
+illustrates how they were created, in case you wish to recreate them
+yourself (later), or repeat the flow with new or modified C programs.</p>
 </div>
 <div id="RISCV_SW_Flow" class="imageblock" style="text-align: center">
 <div class="content">
@@ -3912,6 +3969,18 @@ illustrates how they were created, in case you wish to do it yourself
 (instead of x86).  &#8220;RISC-V International&#8221; is the global
 non-profit that steers RISC-V; you can find links to RISC-V tools
 (including <em>gcc</em>) on their web site (<a href="https://riscv.org/" class="bare">https://riscv.org/</a>).</p>
+<div class="ulist">
+<ul>
+<li>
+<p>When running <em>gcc</em>, it uses some &#8220;bare metal&#8221; libraries in <code>C_programs/lib</code></p>
+</li>
+<li>
+<p>From <code>hello.c</code>, <em>gcc</em> produces <code>hello</code> (ELF executable),
+<code>hello.text</code> (RISC-V Assembly Language listing), <code>hello.map</code>
+(linker map).</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p>ELF files are usually unpacked and loaded by an operating system
@@ -3926,10 +3995,16 @@ ASCII hexadecimal text of memory contents.</p>
 <li>
 <p>In the tutorial repo, we provide an <code>elf_to_hex</code> program in <code>Resources/elf_to_hex</code>.</p>
 </li>
+<li>
+<p>This produces, for example, <code>hello_Mem.hex</code> and <code>symbol_table.txt</code></p>
+</li>
 </ul>
 </div>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>(This process is also described in more detail in the README in the <code>C_programs/</code> directory.)</p>
 </div>
 <hr>
 </div>
@@ -3944,7 +4019,10 @@ it&#8217;s just the standard iconic &#8220;Hello World!&#8221; program.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ make run_hello
+<pre class="highlight"><code>$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg040_Mergesort
+
+$ make run_hello
 cp  ../Resources/C_programs/hello/hello_Mem.hex     ./Mem.hex
 cp  ../Resources/C_programs/hello/symbol_table.txt  ./symbol_table.txt
 ./exe_HW_sim  +tohost
@@ -4037,12 +4115,12 @@ involving hardware support and software conventions.</p>
 </div>
 <div class="sect2">
 <h3 id="_let_s_do_it_run_the_code_mergesort_code_risc_v_binary">6.17. Let&#8217;s do it! Run the <code>mergesort</code> RISC-V binary.</h3>
-<div class="paragraph">
-<p>Here we go:</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>$ make run_mergesort
+<pre class="highlight"><code>$ pwd
+ ... ICFP2020_Bluespec_Tutorial/Examples/Eg040_Mergesort
+
+$ make run_mergesort
 cp  ../Resources/C_programs/mergesort/mergesort_Mem.hex  ./Mem.hex
 cp  ../Resources/C_programs/mergesort/symbol_table.txt   ./symbol_table.txt
 ./exe_HW_sim  +tohost
@@ -4930,7 +5008,7 @@ in _Proc. ACM Intl. Conf. on Functional Programming (ICFP),
 <div id="footer">
 <div id="footer-text">
 Version v0.1<br>
-Last updated 2020-08-23 07:29:58 EDT
+Last updated 2020-08-23 09:56:25 EDT
 </div>
 </div>
 </body>
