@@ -39,27 +39,16 @@ Online, August 23, 2020, 14:00h-17:00h EDT
 '''
 Tutorial materials at: https://github.com/rsnikhil/ICFP2020_Bluespec_Tutorial[]
 
-*Viewing this document*
-
-The source for this document is:
-
-----
-    ICFP2020_Bluespec_Tutorial.adoc
-----
-
-and there is also an HTML version:
-
-----
-    ICFP2020_Bluespec_Tutorial_BH.html
-----
-
+NOTE: *Viewing this document*
+The source for this document is: + 
+`ICFP2020_Bluespec_Tutorial.adoc` + 
+and there is also an HTML version: + 
+`ICFP2020_Bluespec_Tutorial_BH.html` +
 The latter is produced from the former using `asciidoctor`, which is
 available in most package installers (e.g., `apt-get install asciidoctor`).
-
 GitHub and some browsers with `asciidoc` plug-ins will automatically
-process and display the `.adoc` version.  Otherwise, please have your
-browser display the `.html` version.
-
+process and display the `.adoc` version when you click to open.
+Otherwise, please have your browser display the `.html` version.
 
 // ****************************************************************
 // ****************************************************************
@@ -128,7 +117,8 @@ install the following (everything here is free and open-source):
 
 * Materials for this tutorial, from https://github.com/rsnikhil/ICFP2020_Bluespec_Tutorial[].
 
-* The Bluespec _Flute_ open-source RISC-V CPU, from https://github.com/bluespec/Flute[].
+* The Bluespec _Flute_ open-source RISC-V CPU and _WindSoC_ SoC,
+    from https://github.com/bluespec/Flute[].
 
 Ubuntu and Debian Linux are the preferred platforms, but people also use MacOS.
 
@@ -282,7 +272,7 @@ more._
   "`Mergesort`" example.  Being memory-to-memory, it is capable of
   sorting large arrays.  We'll connect this as an "`accelerator`" in a
   small, but complete, Linux-capable, RISC-V CPU-based, "`SoC`"
-  (System on a Chip).
+  (System on a Chip).  The CPU is _Flute_ and the SoC is _WindSoC_.
 
 _All the tools and materials in this tutorial are free and open-source._
 

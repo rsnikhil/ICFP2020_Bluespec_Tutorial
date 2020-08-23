@@ -583,33 +583,26 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>Tutorial materials at: <a href="https://github.com/rsnikhil/ICFP2020_Bluespec_Tutorial" class="bare">https://github.com/rsnikhil/ICFP2020_Bluespec_Tutorial</a></p>
 </div>
-<div class="paragraph">
-<p><strong>Viewing this document</strong></p>
-</div>
-<div class="paragraph">
-<p>The source for this document is:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>    ICFP2020_Bluespec_Tutorial.adoc</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>and there is also an HTML version:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>    ICFP2020_Bluespec_Tutorial_BH.html</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The latter is produced from the former using <code>asciidoctor</code>, which is
-available in most package installers (e.g., <code>apt-get install asciidoctor</code>).</p>
-</div>
-<div class="paragraph">
-<p>GitHub and some browsers with <code>asciidoc</code> plug-ins will automatically
-process and display the <code>.adoc</code> version.  Otherwise, please have your
-browser display the <code>.html</code> version.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<strong>Viewing this document</strong>
+The source for this document is:<br>
+<code>ICFP2020_Bluespec_Tutorial.adoc</code><br>
+and there is also an HTML version:<br>
+<code>ICFP2020_Bluespec_Tutorial_BH.html</code><br>
+The latter is produced from the former using <code>asciidoctor</code>, which is
+available in most package installers (e.g., <code>apt-get install asciidoctor</code>).
+GitHub and some browsers with <code>asciidoc</code> plug-ins will automatically
+process and display the <code>.adoc</code> version when you click to open.
+Otherwise, please have your browser display the <code>.html</code> version.
+</td>
+</tr>
+</table>
 </div>
 <hr>
 </div>
@@ -700,7 +693,8 @@ common package installers)</p>
 <p>Materials for this tutorial, from <a href="https://github.com/rsnikhil/ICFP2020_Bluespec_Tutorial" class="bare">https://github.com/rsnikhil/ICFP2020_Bluespec_Tutorial</a>.</p>
 </li>
 <li>
-<p>The Bluespec <em>Flute</em> open-source RISC-V CPU, from <a href="https://github.com/bluespec/Flute" class="bare">https://github.com/bluespec/Flute</a>.</p>
+<p>The Bluespec <em>Flute</em> open-source RISC-V CPU and <em>WindSoC</em> SoC,
+from <a href="https://github.com/bluespec/Flute" class="bare">https://github.com/bluespec/Flute</a>.</p>
 </li>
 </ul>
 </div>
@@ -954,7 +948,7 @@ familiarize you with parallelism and concurrency in hardware.</p>
 &#8220;Mergesort&#8221; example.  Being memory-to-memory, it is capable of
 sorting large arrays.  We&#8217;ll connect this as an &#8220;accelerator&#8221; in a
 small, but complete, Linux-capable, RISC-V CPU-based, &#8220;SoC&#8221;
-(System on a Chip).</p>
+(System on a Chip).  The CPU is <em>Flute</em> and the SoC is <em>WindSoC</em>.</p>
 </li>
 </ul>
 </div>
@@ -5037,7 +5031,7 @@ in _Proc. ACM Intl. Conf. on Functional Programming (ICFP),
 <div id="footer">
 <div id="footer-text">
 Version v0.1<br>
-Last updated 2020-08-23 10:15:25 EDT
+Last updated 2020-08-23 10:44:07 EDT
 </div>
 </div>
 </body>
