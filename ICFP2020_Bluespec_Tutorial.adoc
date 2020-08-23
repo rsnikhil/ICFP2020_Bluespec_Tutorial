@@ -33,7 +33,33 @@ Tutorial at ICFP 2020 (25th ACM SIGPLAN International Conference on Functional P
 
 Online, August 23, 2020, 14:00h-17:00h EDT
 
+// ****************************************************************
+// ****************************************************************
+
+'''
 Tutorial materials at: https://github.com/rsnikhil/ICFP2020_Bluespec_Tutorial[]
+
+*Viewing this document*
+
+The source for this document is:
+
+----
+    ICFP2020_Bluespec_Tutorial.adoc
+----
+
+and there is also an HTML version:
+
+----
+    ICFP2020_Bluespec_Tutorial_BH.html
+----
+
+The latter is produced from the former using `asciidoctor`, which is
+available in most package installers (e.g., `apt-get install asciidoctor`).
+
+GitHub and some browsers with `asciidoc` plug-ins will automatically
+process and display the `.adoc` version.  Otherwise, please have your
+browser display the `.html` version.
+
 
 // ****************************************************************
 // ****************************************************************

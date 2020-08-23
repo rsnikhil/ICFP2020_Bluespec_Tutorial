@@ -1,8 +1,8 @@
 = Designing Hardware Systems and Accelerators with Open-Source BH (Bluespec Haskell)
 Rishiyur S. Nikhil, Bluespec, Inc. (c) 2020
-:revnumber: v0.8
-:revdate: 2020-08-20
-:revremark: Pre-publicity
+:revnumber: v0.9
+:revdate: 2020-08-23
+:revremark: Release candidate
 :sectnums:
 :toc:
 :toclevels: 3
@@ -52,11 +52,32 @@ All the tutorial tools and code are developed and tested on Ubuntu
 18.04.5 LTS, but it is likely also to work on Debian Linux and MacOS.
 
 // ================================================================
-== Tutorial materials
+== Tutorial Document
 
-The tutorial materials will appear in this repository shortly before
-the tutorial itself: August 23, 2020, 14:00h EDT (New York time).  You
-should be able to `git pull` it at that time.
+The whole tutorial is in one document (`asciidoc` version):
+
+----
+    ICFP2020_Bluespec_Tutorial.adoc
+----
+
+or its HTML version:
+
+----
+    ICFP2020_Bluespec_Tutorial_BH.html
+----
+
+The latter is produced from the former using `asciidoctor`, which is
+available in most package installers (e.g., `apt-get install asciidoctor`).
+
+GitHub and some browsers with `asciidoc` plug-ins will automatically
+process and display the `.adoc` version.  Otherwise, please have your
+browser display the `.html` version.
+
+// ================================================================
+== Tutorial Examples
+
+All the code examples, `Makefiles` to build them etc. are in the
+`Examples/` directory.
 
 // ================================================================
 == Other useful links
