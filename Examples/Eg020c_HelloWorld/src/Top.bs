@@ -17,7 +17,7 @@ mkTop =
     deepThought :: DeepThought_IFC <- mkDeepThought
 
     rules
-      "rule rl_ask": when True ==> do
+      "rl_ask": when True ==> do
         $display  "Asking the Ultimate Question of Life, The Universe and Everything"
         deepThought.whatIsTheAnswer
 
